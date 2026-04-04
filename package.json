@@ -1,16 +1,18 @@
 {
-  "name": "crashland",
+  "name": "crashtube",
   "version": "1.0.0",
-  "description": "",
+  "description": "CrashTube - Videoteca personal",
   "main": "api/stream.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No tests\" && exit 0"
   },
   "keywords": [],
-  "author": "",
+  "author": "Efr4in",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "googleapis": "^171.4.0"
+    "@supabase/supabase-js": "^2.101.1",
+    "bcryptjs": "^2.4.3",
+    "googleapis": "^171.4.0",
+    "jsonwebtoken": "^9.0.3"
   }
 }

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CrashTube — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #07090f; --surface: #0d1117; --card: #131b27;
+  --border: #1e2d40; --accent: #00c4a7; --accent2: #ff5e57;
+  --text: #e8edf3; --muted: #6b7a8d;
+  --font-head: 'Syne', sans-serif; --font-body: 'Outfit', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-body); min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+canvas#bg {
+  position: fixed; inset: 0; z-index: 0;
+  width: 100%; height: 100%;
+}
+.login-wrap {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 420px; padding: 20px;
+}
+.login-box {
+  background: rgba(13,17,23,0.85);
+  border: 1px solid rgba(0,196,167,0.2);
+  border-radius: 20px;
+  padding: 48px 40px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 32px 64px rgba(0,0,0,0.6), 0 0 60px rgba(0,196,167,0.05);
+}
+.brand {
+  display: flex; align-items: center; gap: 12px;
+  justify-content: center; margin-bottom: 36px;
+}
+.brand-dot {
+  width: 36px; height: 36px; background: var(--accent);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+}
+.brand-dot svg { width: 20px; height: 20px; fill: #07090f; }
+.brand-name {
+  font-family: var(--font-head); font-size: 26px; font-weight: 800;
+}
+.login-title {
+  font-family: var(--font-head); font-size: 22px; font-weight: 700;
+  text-align: center; margin-bottom: 8px;
+}
+.login-sub {
+  color: var(--muted); font-size: 14px; text-align: center; margin-bottom: 32px;
+}
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.form-input {
+  width: 100%; background: rgba(7,9,15,0.8);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; color: var(--text);
+  font-family: var(--font-body); font-size: 15px;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,196,167,0.1);
+}
+.btn-login {
+  width: 100%; padding: 14px;
+  background: var(--accent); color: #07090f;
+  font-family: var(--font-head); font-size: 16px; font-weight: 700;
+  border: none; border-radius: 10px; cursor: pointer;
+  transition: all .2s; margin-top: 8px;
+}
+.btn-login:hover { background: #00dfc0; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,196,167,0.3); }
+.btn-login:active { transform: translateY(0); }
+.error-msg {
+  background: rgba(255,94,87,0.1); border: 1px solid rgba(255,94,87,0.3);
+  border-radius: 8px; padding: 12px; color: var(--accent2);
+  font-size: 13px; margin-top: 16px; text-align: center; display: none;
+}
+.back-link {
+  text-align: center; margin-top: 24px;
+  font-size: 13px; color: var(--muted);
+}
+.back-link a { color: var(--accent); text-decoration: none; }
+.back-link a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="brand">
+      <div class="brand-dot"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <span class="brand-name">CrashTube</span>
+    </div>
+    <h1 class="login-title">Acceso Administrador</h1>
+    <p class="login-sub">Solo personal autorizado</p>
+
+    <div class="form-group">
+      <label class="form-label">Usuario</label>
+      <input class="form-input" id="username" type="text" placeholder="tu usuario" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contraseña</label>
+      <input class="form-input" id="password" type="password" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <button class="btn-login" id="btn-login" onclick="doLogin()">Iniciar Sesión</button>
+    <div class="error-msg" id="error-msg"></div>
+    <div class="back-link"><a href="/">← Volver al inicio</a></div>
+  </div>
+</div>
+
+<script>
+/* ─── 3D CUBE BACKGROUND ─────────────────── */
+(function() {
+  const canvas = document.getElementById('bg');
+  const ctx = canvas.getContext('2d');
+  let W, H, cubes = [];
+  let mouseX = 0, mouseY = 0;
+  let camOffX = 0, camOffY = 0;
+
+  const TW = 56, TH = 28;
+  const ACCENT = '0, 196, 167';
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    buildGrid();
+  }
+
+  function buildGrid() {
+    cubes = [];
+    const cols = Math.ceil(W / TW) + 8;
+    const rows = Math.ceil(H / TH) + 8;
+    for (let r = -4; r < rows; r++) {
+      for (let c = -4; c < cols; c++) {
+        cubes.push({
+          c, r,
+          h: Math.random() > 0.82 ? Math.floor(Math.random() * 4) + 1 : 0,
+          glow: 0, target: 0,
+          timer: Math.random() * 500
+        });
+      }
+    }
+    cubes.sort((a, b) => (a.c + a.r) - (b.c + b.r));
+  }
+
+  function isoX(c, r) { return (c - r) * TW / 2 + W / 2; }
+  function isoY(c, r) { return (c + r) * TH / 2 + H / 4; }
+
+  function drawCube(c, r, h, glow) {
+    const ox = camOffX, oy = camOffY;
+    const px = isoX(c, r) + ox;
+    const py = isoY(c, r) + oy;
+    const lift = h * TH;
+    const g = glow;
+    const baseStroke = 0.12 + g * 0.5;
+    const baseFill = 0.03 + g * 0.18;
+
+    // Top face
+    ctx.beginPath();
+    ctx.moveTo(px, py - lift - TH);
+    ctx.lineTo(px + TW/2, py - lift - TH/2);
+    ctx.lineTo(px, py - lift);
+    ctx.lineTo(px - TW/2, py - lift - TH/2);
+    ctx.closePath();
+    ctx.fillStyle = `rgba(${ACCENT}, ${baseFill * 1.4})`;
+    ctx.fill();
+    ctx.strokeStyle = `rgba(${ACCENT}, ${baseStroke})`;
+    ctx.lineWidth = 0.7;
+    ctx.stroke();
+
+    if (h > 0) {
+      // Right face
+      ctx.beginPath();
+      ctx.moveTo(px + TW/2, py - lift - TH/2);
+      ctx.lineTo(px + TW/2, py - TH/2);
+      ctx.lineTo(px, py);
+      ctx.lineTo(px, py - lift);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(${ACCENT}, ${baseFill * 0.8})`;
+      ctx.fill();
+      ctx.strokeStyle = `rgba(${ACCENT}, ${baseStroke * 0.8})`;
+      ctx.stroke();
+
+      // Left face
+      ctx.beginPath();
+      ctx.moveTo(px - TW/2, py - lift - TH/2);
+      ctx.lineTo(px - TW/2, py - TH/2);
+      ctx.lineTo(px, py);
+      ctx.lineTo(px, py - lift);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(${ACCENT}, ${baseFill * 0.5})`;
+      ctx.fill();
+      ctx.strokeStyle = `rgba(${ACCENT}, ${baseStroke * 0.6})`;
+      ctx.stroke();
+    }
+
+    // Glow pulse on top
+    if (g > 0.2) {
+      ctx.save();
+      ctx.shadowColor = `rgb(${ACCENT})`;
+      ctx.shadowBlur = 20 * g;
+      ctx.beginPath();
+      ctx.moveTo(px, py - lift - TH);
+      ctx.lineTo(px + TW/2, py - lift - TH/2);
+      ctx.lineTo(px, py - lift);
+      ctx.lineTo(px - TW/2, py - lift - TH/2);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(${ACCENT}, ${g * 0.25})`;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+
+    camOffX += ((mouseX - W/2) * 0.015 - camOffX) * 0.04;
+    camOffY += ((mouseY - H/2) * 0.01 - camOffY) * 0.04;
+
+    cubes.forEach(cube => {
+      cube.timer--;
+      if (cube.timer <= 0) {
+        cube.target = Math.random() > 0.72 ? Math.random() * 0.85 + 0.15 : 0;
+        cube.timer = 80 + Math.random() * 500;
+      }
+      cube.glow += (cube.target - cube.glow) * 0.035;
+      drawCube(cube.c, cube.r, cube.h, cube.glow);
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+  resize();
+  animate();
+})();
+
+/* ─── LOGIN LOGIC ────────────────────────── */
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function doLogin() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('btn-login');
+  const err = document.getElementById('error-msg');
+
+  if (!username || !password) {
+    showError('Completá usuario y contraseña.');
+    return;
+  }
+
+  btn.textContent = 'Verificando...';
+  btn.disabled = true;
+  err.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || 'Error al iniciar sesión');
+      btn.textContent = 'Iniciar Sesión';
+      btn.disabled = false;
+      return;
+    }
+
+    localStorage.setItem('ct_token', data.token);
+    localStorage.setItem('ct_user', data.username);
+    window.location.href = '/admin';
+  } catch (e) {
+    showError('Error de conexión. Intentá de nuevo.');
+    btn.textContent = 'Iniciar Sesión';
+    btn.disabled = false;
+  }
+}
+
+function showError(msg) {
+  const err = document.getElementById('error-msg');
+  err.textContent = msg;
+  err.style.display = 'block';
+}
+</script>
+</body>
+</html>
