@@ -3,6 +3,7 @@ const { google } = require('googleapis');
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Range');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const { fileId } = req.query;
@@ -22,18 +23,49 @@ module.exports = async (req, res) => {
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
 
-    const client = await auth.getClient();
-    const tokenResponse = await client.getAccessToken();
-    const accessToken = tokenResponse.token;
+    const drive = google.drive({ version: 'v3', auth });
 
-    if (!accessToken) throw new Error('Token vacio - verificá las credenciales');
+    const meta = await drive.files.get({ fileId, fields: 'mimeType,size' });
+    const mimeType = meta.data.mimeType || 'video/mp4';
+    const fileSize = parseInt(meta.data.size || '0');
 
-    const directUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&access_token=${accessToken}`;
-    return res.status(200).json({ url: directUrl });
+    const rangeHeader = req.headers['range'];
+    let driveRange = '';
+
+    if (rangeHeader && fileSize > 0) {
+      const parts = rangeHeader.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1]
+        ? parseInt(parts[1], 10)
+        : Math.min(start + 2 * 1024 * 1024 - 1, fileSize - 1);
+      const chunkSize = end - start + 1;
+
+      res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
+      res.setHeader('Accept-Ranges', 'bytes');
+      res.setHeader('Content-Length', chunkSize);
+      res.setHeader('Content-Type', mimeType);
+      res.status(206);
+      driveRange = `bytes=${start}-${end}`;
+    } else {
+      res.setHeader('Content-Type', mimeType);
+      res.setHeader('Accept-Ranges', 'bytes');
+      if (fileSize > 0) res.setHeader('Content-Length', fileSize);
+    }
+
+    const streamResp = await drive.files.get(
+      { fileId, alt: 'media' },
+      {
+        responseType: 'stream',
+        headers: driveRange ? { Range: driveRange } : {},
+      }
+    );
+
+    streamResp.data.pipe(res);
 
   } catch (err) {
     console.error('ERROR STREAM:', err.message);
-    console.error('STACK:', err.stack);
-    return res.status(500).json({ error: err.message });
+    if (!res.headersSent) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };

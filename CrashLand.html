@@ -493,7 +493,7 @@ async function playVideo(idx) {
   vid.style.display = 'none';
   vid.src = '';
   loading.style.display = 'flex';
-  loading.innerHTML = '<div class="spinner"></div><span>Obteniendo acceso...</span>';
+  loading.innerHTML = '<div class="spinner"></div><span>Cargando video...</span>';
 
   document.getElementById('player-title').textContent = v.title;
   document.getElementById('player-desc').textContent = v.desc || 'Sin descripción.';
@@ -504,19 +504,9 @@ async function playVideo(idx) {
   renderSidebar(idx);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  try {
-    const resp = await fetch(`/api/stream?fileId=${parsed.fileId}`);
-    const data = await resp.json();
-    if (!resp.ok || !data.url) throw new Error(data.error || 'Sin URL');
-    vid.src = data.url;
-    vid.load();
-  } catch (err) {
-    loading.innerHTML = `
-      <svg viewBox="0 0 24 24" fill="none" stroke="#ff5e57" stroke-width="1.5" width="48" height="48">
-        <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
-      </svg>
-      <span style="color:#ff5e57">Error: ${err.message}</span>`;
-  }
+  // Apuntar directo al proxy — sin fetch previo
+  vid.src = `/api/stream?fileId=${parsed.fileId}`;
+  vid.load();
 }
 
 /* ─── MODAL ───────────────────────────────────── */
