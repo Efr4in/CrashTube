@@ -339,9 +339,9 @@ function renderViews(){
   const el=document.getElementById('views-list');
   if(!allViews.length){el.innerHTML='<p class="empty-p">Sin reproducciones aún.</p>';return;}
   el.innerHTML=`<table class="views-table">
-    <thead><tr><th>Video</th><th>IP</th><th>Fecha</th></tr></thead>
+    <thead><tr><th>Video</th><th>Dispositivo</th><th>Fecha</th></tr></thead>
     <tbody>${allViews.slice(0,20).map(v=>`
-    <tr><td>${esc(v.videos?.title||'—')}</td><td>${esc(v.ip||'—')}</td><td>${new Date(v.viewed_at).toLocaleString('es')}</td></tr>`).join('')}</tbody>
+    <tr><td>${esc(v.videos?.title||'—')}</td><td>${deviceIcon(v.device||'Desconocido')}</td><td>${new Date(v.viewed_at).toLocaleString('es')}</td></tr>`).join('')}</tbody>
   </table>`;
 }
 
@@ -422,6 +422,10 @@ async function clearHistory(){
 function showToast(msg,isError=false){
   const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(isError?' error':'');
   t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+function deviceIcon(d){
+  const icons={'Windows':'🖥 Windows','Mac':'🍎 Mac','Android':'📱 Android','iPhone':'📱 iPhone','iPad':'📱 iPad','Android Tablet':'📱 Tablet','PS4':'🎮 PS4','PS5':'🎮 PS5','Xbox':'🎮 Xbox','Smart TV':'📺 Smart TV','Linux':'🐧 Linux','Chromebook':'💻 Chromebook','Desconocido':'❓ Desconocido','Otro':'📟 Otro'};
+  return icons[d]||('📟 '+d);
 }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 

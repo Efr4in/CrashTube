@@ -13,16 +13,35 @@ function verifyToken(req) {
   catch { return null; }
 }
 
+function detectDevice(ua) {
+  if (!ua) return 'Desconocido';
+  if (/PlayStation 4/i.test(ua)) return 'PS4';
+  if (/PlayStation 5/i.test(ua)) return 'PS5';
+  if (/Xbox/i.test(ua)) return 'Xbox';
+  if (/SmartTV|Smart-TV|HbbTV|Tizen|WebOS|BRAVIA|SMART-TV/i.test(ua)) return 'Smart TV';
+  if (/iPhone/i.test(ua)) return 'iPhone';
+  if (/iPad/i.test(ua)) return 'iPad';
+  if (/Android/i.test(ua) && /Mobile/i.test(ua)) return 'Android';
+  if (/Android/i.test(ua)) return 'Android Tablet';
+  if (/Macintosh|Mac OS X/i.test(ua) && !/Mobile/i.test(ua)) return 'Mac';
+  if (/Windows NT/i.test(ua)) return 'Windows';
+  if (/Linux/i.test(ua)) return 'Linux';
+  if (/CrOS/i.test(ua)) return 'Chromebook';
+  return 'Otro';
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Device-UA');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   if (req.method === 'POST') {
     const { video_id } = req.body;
+    const ua = req.headers['x-device-ua'] || req.headers['user-agent'] || '';
+    const device = detectDevice(ua);
     const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
-    const { error } = await supabase.from('views').insert([{ video_id, ip }]);
+    const { error } = await supabase.from('views').insert([{ video_id, ip, device }]);
     if (error) return res.status(500).json({ error: error.message });
     return res.status(201).json({ success: true });
   }
@@ -37,7 +56,6 @@ module.exports = async (req, res) => {
     return res.status(200).json(data);
   }
 
-  // DELETE — borrar todo el historial
   if (req.method === 'DELETE') {
     const user = verifyToken(req);
     if (!user) return res.status(401).json({ error: 'No autorizado' });

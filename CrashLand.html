@@ -223,7 +223,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;height:60px;display:flex;ali
 .sidebar-item.active{background:var(--card);border-color:rgba(0,196,167,0.25);}
 .sidebar-thumb{width:100px;min-width:100px;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--surface);}
 .sidebar-thumb img{width:100%;height:100%;object-fit:cover;}
-.sidebar-item-title{font-size:12px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px;line-clamp:2;}
+.sidebar-item-title{font-size:12px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px;}
 .sidebar-item-tag{font-size:10px;color:var(--accent);}
 
 /* Toast */
@@ -264,9 +264,9 @@ footer span{color:var(--accent);}
 <div id="home-view">
   <section class="hero">
     <div class="hero-content">
-      <div class="hero-eyebrow">Tu plataforma de confianza</div>
-      <h1 class="hero-title">Todas tus Películas,<br/><span>en cualquier lugar</span></h1>
-      <p class="hero-sub">Disfruta de las Películas en este ambiente cinematográgfico</p>
+      <div class="hero-eyebrow">Tu plataforma personal</div>
+      <h1 class="hero-title">Todos tus videos,<br/><span>un solo lugar</span></h1>
+      <p class="hero-sub">Organizá y reproducí tus películas almacenadas en Google Drive, desde cualquier dispositivo.</p>
       <div class="hero-cta">
         <button class="btn btn-primary" onclick="document.querySelector('.section').scrollIntoView({behavior:'smooth'})">Ver Catálogo</button>
         <a href="/login" class="btn btn-ghost" id="hero-admin-link">Acceso Admin</a>
@@ -298,8 +298,10 @@ footer span{color:var(--accent);}
           <div class="spinner"></div>
           <span>Cargando video...</span>
         </div>
-        <!-- Video element -->
+        <!-- Video element (hidden by custom controls unless PS4) -->
         <video id="vid" preload="metadata"></video>
+        <!-- PS4 fallback: simple native player -->
+        <video id="vid-ps4" controls preload="metadata" style="display:none;width:100%;height:100%;outline:none;"></video>
         <!-- Big play flash -->
         <div class="big-play"><div class="big-play-icon" id="big-play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         <!-- Seek flash L/R -->
@@ -399,7 +401,7 @@ footer span{color:var(--accent);}
 </div>
 
 <div class="toast" id="toast"></div>
-<footer>Hecho por 🐼Efra🐼 — <span>CrashTube</span> — 🎁 Tu videoteca digital segura</footer>
+<footer>Hecho con ♥ — <span>CrashTube</span> · Tu videoteca personal</footer>
 
 <script>
 /* ═══ PARALLAX BG ══════════════════════════════ */
@@ -449,6 +451,7 @@ function toggleMenu(){document.getElementById('hamburger').classList.toggle('ope
 document.addEventListener('click',e=>{const m=document.getElementById('mobile-menu'),h=document.getElementById('hamburger');if(!m.contains(e.target)&&!h.contains(e.target)&&m.classList.contains('open')){h.classList.remove('open');m.classList.remove('open');}});
 
 /* ═══ AUTH ══════════════════════════════════════ */
+const isPS4 = /PlayStation 4|PlayStation 5/i.test(navigator.userAgent);
 const token=localStorage.getItem('ct_token');
 if(token){
   ['btn-admin','m-btn-admin'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='';});
@@ -511,10 +514,8 @@ async function playVideo(idx){
   const fid=parseDriveId(v.drive_url);if(!fid){showToast('URL de Drive inválida.',true);return;}
   document.getElementById('home-view').style.display='none';
   document.getElementById('player-view').style.display='block';
-  const vid=document.getElementById('vid');
-  const loading=document.getElementById('player-loading');
-  vid.pause();vid.src='';
-  loading.style.display='flex';
+
+  // Info
   document.getElementById('player-title').textContent=v.title;
   document.getElementById('player-desc').textContent=v.description||'Sin descripción.';
   document.getElementById('player-year').textContent=v.year||'';
@@ -522,9 +523,41 @@ async function playVideo(idx){
   if(tp){tp.textContent=v.category||'';tp.style.display=v.category?'':'none';}
   renderSidebar(idx);
   window.scrollTo({top:0,behavior:'smooth'});
-  vid.src=`/api/stream?fileId=${fid}`;
-  vid.load();
-  try{await fetch('/api/views',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({video_id:v.id})});}catch(e){}
+
+  const streamUrl=`/api/stream?fileId=${fid}`;
+
+  if(isPS4){
+    // PS4: usa el reproductor nativo simple — sin JS custom
+    const vidPS4=document.getElementById('vid-ps4');
+    const vidCustom=document.getElementById('vid');
+    const wrap=document.getElementById('player-wrap');
+
+    // Ocultar controles custom, mostrar video nativo
+    document.getElementById('yt-controls').style.display='none';
+    document.getElementById('player-gradient').style.display='none';
+    document.getElementById('big-play').style.display='none';
+    wrap.style.cursor='default';
+    vidCustom.style.display='none';
+    vidPS4.style.display='block';
+
+    document.getElementById('player-loading').style.display='flex';
+    vidPS4.src=streamUrl;
+    vidPS4.load();
+    vidPS4.oncanplay=()=>{ document.getElementById('player-loading').style.display='none'; };
+    vidPS4.onerror=()=>{
+      document.getElementById('player-loading').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#ff5e57" stroke-width="1.5" width="44" height="44"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span style="color:#ff5e57">Error al cargar el video.</span>';
+    };
+  } else {
+    // Resto de dispositivos: reproductor custom
+    const vid=document.getElementById('vid');
+    const loading=document.getElementById('player-loading');
+    vid.pause();vid.src='';
+    loading.style.display='flex';
+    vid.src=streamUrl;
+    vid.load();
+  }
+
+  try{await fetch('/api/views',{method:'POST',headers:{'Content-Type':'application/json','X-Device-UA':navigator.userAgent},body:JSON.stringify({video_id:v.id})});}catch(e){}
 }
 
 /* ═══ CUSTOM PLAYER ════════════════════════════ */
