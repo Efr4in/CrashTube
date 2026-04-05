@@ -15,7 +15,7 @@ function verifyToken(req) {
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -37,6 +37,17 @@ module.exports = async (req, res) => {
       .select().single();
     if (error) return res.status(500).json({ error: error.message });
     return res.status(201).json(data);
+  }
+
+  if (req.method === 'PUT') {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: 'Falta el id' });
+    const { title, drive_url, category, year, description, thumb_url } = req.body;
+    const { data, error } = await supabase
+      .from('videos').update({ title, drive_url, category, year, description, thumb_url })
+      .eq('id', id).select().single();
+    if (error) return res.status(500).json({ error: error.message });
+    return res.status(200).json(data);
   }
 
   if (req.method === 'DELETE') {
