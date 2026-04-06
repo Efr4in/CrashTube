@@ -25,38 +25,42 @@ module.exports = async (req, res) => {
 
     const drive = google.drive({ version: 'v3', auth });
 
+    // Obtener metadata
     const meta = await drive.files.get({ fileId, fields: 'mimeType,size' });
     const mimeType = meta.data.mimeType || 'video/mp4';
     const fileSize = parseInt(meta.data.size || '0');
 
+    // Siempre responder con un rango — PS4 y otros browsers necesitan
+    // Content-Length exacto + 206 Partial Content para empezar a reproducir
     const rangeHeader = req.headers['range'];
-    let driveRange = '';
+    let start = 0;
+    let end = Math.min(fileSize - 1, 2 * 1024 * 1024 - 1); // 2MB por defecto
 
-    if (rangeHeader && fileSize > 0) {
+    if (rangeHeader) {
       const parts = rangeHeader.replace(/bytes=/, '').split('-');
-      const start = parseInt(parts[0], 10);
-      const end = parts[1]
+      start = parseInt(parts[0], 10);
+      end = parts[1]
         ? parseInt(parts[1], 10)
         : Math.min(start + 2 * 1024 * 1024 - 1, fileSize - 1);
-      const chunkSize = end - start + 1;
-
-      res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
-      res.setHeader('Accept-Ranges', 'bytes');
-      res.setHeader('Content-Length', chunkSize);
-      res.setHeader('Content-Type', mimeType);
-      res.status(206);
-      driveRange = `bytes=${start}-${end}`;
-    } else {
-      res.setHeader('Content-Type', mimeType);
-      res.setHeader('Accept-Ranges', 'bytes');
-      if (fileSize > 0) res.setHeader('Content-Length', fileSize);
     }
+
+    // Asegurarse de que end no supera el archivo
+    if (end >= fileSize) end = fileSize - 1;
+    const chunkSize = end - start + 1;
+
+    res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('Content-Length', chunkSize);
+    res.setHeader('Content-Type', mimeType);
+    res.setHeader('Content-Disposition', 'inline');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.status(206);
 
     const streamResp = await drive.files.get(
       { fileId, alt: 'media' },
       {
         responseType: 'stream',
-        headers: driveRange ? { Range: driveRange } : {},
+        headers: { Range: `bytes=${start}-${end}` },
       }
     );
 

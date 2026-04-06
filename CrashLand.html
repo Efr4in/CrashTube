@@ -301,7 +301,7 @@ footer span{color:var(--accent);}
         <!-- Video element (hidden by custom controls unless PS4) -->
         <video id="vid" preload="metadata"></video>
         <!-- PS4 fallback: simple native player -->
-        <video id="vid-ps4" controls preload="metadata" style="display:none;width:100%;height:100%;outline:none;"></video>
+        <video id="vid-ps4" controls preload="auto" playsinline webkit-playsinline x-webkit-airplay="allow" style="display:none;width:100%;height:100%;outline:none;background:#000;"></video>
         <!-- Big play flash -->
         <div class="big-play"><div class="big-play-icon" id="big-play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         <!-- Seek flash L/R -->
