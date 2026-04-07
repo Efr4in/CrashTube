@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CrashTube — PS4</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a0a0a;color:#e8edf3;font-family:sans-serif;min-height:100vh;}
+
+/* Simple starfield bg */
+canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* Nav */
+nav{position:sticky;top:0;z-index:10;background:rgba(7,9,15,0.95);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,196,167,0.15);}
+.brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;}
+.brand .dot{width:26px;height:26px;background:#00c4a7;border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.brand .dot svg{width:14px;height:14px;fill:#07090f;}
+.ps4-badge{background:rgba(0,100,255,0.15);border:1px solid rgba(0,100,255,0.4);color:#6ab0ff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;}
+.back-btn{background:transparent;border:1px solid #1e2d40;color:#6b7a8d;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;}
+.back-btn:hover{border-color:#00c4a7;color:#00c4a7;}
+
+/* Main */
+main{position:relative;z-index:1;padding:24px;}
+h1{font-size:18px;font-weight:600;margin-bottom:20px;color:#e8edf3;}
+h1 span{color:#00c4a7;}
+
+/* Video list */
+.video-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+.video-item{
+  background:#111827;border:1px solid #1e2d40;border-radius:10px;
+  overflow:hidden;cursor:pointer;transition:border-color .2s,transform .2s;
+}
+.video-item:hover,.video-item:focus{border-color:#00c4a7;transform:scale(1.02);outline:none;}
+.vi-thumb{aspect-ratio:16/9;background:#0d1520;overflow:hidden;}
+.vi-thumb img{width:100%;height:100%;object-fit:cover;}
+.vi-body{padding:12px;}
+.vi-title{font-size:13px;font-weight:600;margin-bottom:5px;line-height:1.35;}
+.vi-meta{font-size:11px;color:#6b7a8d;}
+.tag{background:rgba(0,196,167,0.1);color:#00c4a7;border-radius:4px;padding:1px 7px;font-size:10px;}
+
+/* Player view */
+#player-view{display:none;position:relative;z-index:1;}
+.player-container{padding:16px 24px;}
+.player-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.btn-back-player{background:transparent;border:1px solid #1e2d40;color:#6b7a8d;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;}
+.btn-back-player:hover{border-color:#00c4a7;color:#00c4a7;}
+#player-title-bar{font-size:16px;font-weight:600;}
+
+/* Native video — full width, let PS4 handle controls */
+#ps4-video{
+  width:100%;max-width:960px;display:block;
+  border-radius:10px;background:#000;
+  border:1px solid #1e2d40;
+}
+
+/* Loading */
+#ps4-loading{
+  display:none;padding:40px;text-align:center;color:#6b7a8d;font-size:14px;
+}
+.sp{
+  width:36px;height:36px;border:2.5px solid rgba(255,255,255,0.1);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;
+  margin:0 auto 12px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Error */
+#ps4-error{display:none;padding:24px;background:#1a0d0d;border:1px solid rgba(255,94,87,0.3);border-radius:10px;color:#ff5e57;font-size:13px;margin-top:16px;}
+
+/* Loading screen */
+#loading-screen{padding:60px;text-align:center;color:#6b7a8d;}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<nav>
+  <div class="brand">
+    <div class="dot"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    CrashTube
+    <span class="ps4-badge">🎮 PS4</span>
+  </div>
+  <button class="back-btn" onclick="window.location.href='/'">← Sitio principal</button>
+</nav>
+
+<!-- Catálogo -->
+<div id="home-view">
+  <main>
+    <h1>Catálogo <span>de Películas</span></h1>
+    <div id="loading-screen"><div class="sp"></div><p>Cargando...</p></div>
+    <div class="video-list" id="video-list" style="display:none"></div>
+  </main>
+</div>
+
+<!-- Reproductor -->
+<div id="player-view">
+  <div class="player-container">
+    <div class="player-header">
+      <button class="btn-back-player" onclick="backToList()">← Volver</button>
+      <span id="player-title-bar"></span>
+    </div>
+    <div id="ps4-loading"><div class="sp"></div><p>Obteniendo video...</p></div>
+    <video id="ps4-video" controls preload="auto" playsinline></video>
+    <div id="ps4-error"></div>
+  </div>
+</div>
+
+<script>
+// ── Starfield simple ──────────────────────────────────────────────────────────
+(function(){
+  const C=document.getElementById('bg'),ctx=C.getContext('2d');
+  let W,H,stars=[];
+  function resize(){
+    W=C.width=window.innerWidth;H=C.height=window.innerHeight;
+    stars=Array.from({length:120},()=>({x:Math.random()*W,y:Math.random()*H,r:.5+Math.random()*1.5,tw:Math.random()*Math.PI*2,ts:.01+Math.random()*.02}));
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.tw+=s.ts;
+      const a=.2+.3*Math.sin(s.tw);
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(220,235,255,${a})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);
+  resize();draw();
+})();
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+let allVideos=[], visitId=null;
+
+function parseDriveId(url){
+  const m=url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if(m)return m[1];
+  const m2=url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  return m2?m2[1]:null;
+}
+
+// Registrar visita de PS4
+async function registerVisit(){
+  if(sessionStorage.getItem('ct_visit_id')){visitId=sessionStorage.getItem('ct_visit_id');return;}
+  try{
+    const res=await fetch('/api/views',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Device-UA':navigator.userAgent},
+      body:JSON.stringify({})
+    });
+    const d=await res.json();
+    if(d.id){visitId=String(d.id);sessionStorage.setItem('ct_visit_id',visitId);}
+  }catch(e){}
+}
+
+async function loadVideos(){
+  try{
+    const res=await fetch('/api/videos');
+    allVideos=await res.json();
+    renderList();
+  }catch(e){
+    document.getElementById('loading-screen').innerHTML='<p style="color:#ff5e57">Error al cargar. Recargá la página.</p>';
+  }
+}
+
+function renderList(){
+  document.getElementById('loading-screen').style.display='none';
+  const list=document.getElementById('video-list');
+  list.style.display='grid';
+  if(!allVideos.length){list.innerHTML='<p style="color:#6b7a8d">Sin películas disponibles.</p>';return;}
+  list.innerHTML=allVideos.map((v,i)=>{
+    const fid=parseDriveId(v.drive_url);
+    const thumb=v.thumb_url||(fid?`https://drive.google.com/thumbnail?id=${fid}&sz=w400`:'');
+    return `<div class="video-item" tabindex="0" onclick="playVideo(${i})" onkeydown="if(event.key==='Enter')playVideo(${i})">
+      <div class="vi-thumb">${thumb?`<img src="${thumb}" loading="lazy">`:'<div style="width:100%;height:100%;background:#0d1520"></div>'}</div>
+      <div class="vi-body">
+        <p class="vi-title">${esc(v.title)}</p>
+        <p class="vi-meta">${v.category?`<span class="tag">${esc(v.category)}</span> `:''} ${v.year?esc(v.year):''}</p>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function playVideo(idx){
+  const v=allVideos[idx];if(!v)return;
+  const fid=parseDriveId(v.drive_url);if(!fid){alert('URL de Drive inválida');return;}
+
+  document.getElementById('home-view').style.display='none';
+  document.getElementById('player-view').style.display='block';
+  document.getElementById('player-title-bar').textContent=v.title;
+  document.getElementById('ps4-error').style.display='none';
+
+  const vid=document.getElementById('ps4-video');
+  vid.style.display='none';
+  document.getElementById('ps4-loading').style.display='block';
+
+  // Actualizar historial con la peli
+  if(visitId){
+    try{
+      await fetch(`/api/views?id=${visitId}`,{
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({video_id:v.id})
+      });
+    }catch(e){}
+  }
+
+  // Obtener URL directa de Google
+  try{
+    const res=await fetch(`/api/stream?fileId=${fid}&mode=redirect`);
+    const data=await res.json();
+    if(!data.url)throw new Error('Sin URL');
+    
+    vid.src=data.url;
+    vid.style.display='block';
+    document.getElementById('ps4-loading').style.display='none';
+    vid.load();
+    vid.play().catch(()=>{});
+  }catch(e){
+    document.getElementById('ps4-loading').style.display='none';
+    const errEl=document.getElementById('ps4-error');
+    errEl.style.display='block';
+    errEl.textContent='Error al cargar el video: '+e.message;
+  }
+}
+
+function backToList(){
+  const vid=document.getElementById('ps4-video');
+  vid.pause();vid.src='';
+  document.getElementById('player-view').style.display='none';
+  document.getElementById('home-view').style.display='block';
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+registerVisit();
+loadVideos();
+</script>
+</body>
+</html>

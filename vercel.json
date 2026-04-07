@@ -1,8 +1,9 @@
 {
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/login", "destination": "/login.html" },
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/(.*)", "destination": "/CrashLand.html" }
+    { "source": "/login",    "destination": "/login.html" },
+    { "source": "/admin",    "destination": "/admin.html" },
+    { "source": "/ps4",      "destination": "/ps4.html" },
+    { "source": "/(.*)",     "destination": "/CrashLand.html" }
   ]
 }
