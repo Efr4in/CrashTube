@@ -6,7 +6,7 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Range');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { fileId } = req.query;
+  const { fileId, mode } = req.query;
   if (!fileId) return res.status(400).json({ error: 'Falta fileId' });
 
   try {
@@ -23,18 +23,28 @@ module.exports = async (req, res) => {
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
 
+    const client = await auth.getClient();
+    const tokenResponse = await client.getAccessToken();
+    const accessToken = tokenResponse.token;
+
+    // Modo PS4: devuelve la URL directa como JSON (sin redirect)
+    if (mode === 'redirect') {
+      const directUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&access_token=${accessToken}`;
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(200).json({ url: directUrl });
+    }
+
+    // Modo normal: proxy con range requests para Chrome, Safari, etc.
     const drive = google.drive({ version: 'v3', auth });
 
-    // Obtener metadata
     const meta = await drive.files.get({ fileId, fields: 'mimeType,size' });
     const mimeType = meta.data.mimeType || 'video/mp4';
     const fileSize = parseInt(meta.data.size || '0');
 
-    // Siempre responder con un rango — PS4 y otros browsers necesitan
-    // Content-Length exacto + 206 Partial Content para empezar a reproducir
     const rangeHeader = req.headers['range'];
     let start = 0;
-    let end = Math.min(fileSize - 1, 2 * 1024 * 1024 - 1); // 2MB por defecto
+    let end = Math.min(fileSize - 1, 2 * 1024 * 1024 - 1);
 
     if (rangeHeader) {
       const parts = rangeHeader.replace(/bytes=/, '').split('-');
@@ -44,7 +54,6 @@ module.exports = async (req, res) => {
         : Math.min(start + 2 * 1024 * 1024 - 1, fileSize - 1);
     }
 
-    // Asegurarse de que end no supera el archivo
     if (end >= fileSize) end = fileSize - 1;
     const chunkSize = end - start + 1;
 
@@ -58,18 +67,13 @@ module.exports = async (req, res) => {
 
     const streamResp = await drive.files.get(
       { fileId, alt: 'media' },
-      {
-        responseType: 'stream',
-        headers: { Range: `bytes=${start}-${end}` },
-      }
+      { responseType: 'stream', headers: { Range: `bytes=${start}-${end}` } }
     );
 
     streamResp.data.pipe(res);
 
   } catch (err) {
     console.error('ERROR STREAM:', err.message);
-    if (!res.headersSent) {
-      res.status(500).json({ error: err.message });
-    }
+    if (!res.headersSent) res.status(500).json({ error: err.message });
   }
 };
