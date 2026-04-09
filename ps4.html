@@ -231,11 +231,18 @@ async function playVideo(idx){
       vid.style.display='block';
     };
 
-    vid.onerror=()=>{
+    vid.onerror = async () => {
       document.getElementById('ps4-loading').style.display='none';
       const errEl=document.getElementById('ps4-error');
       errEl.style.display='block';
-      errEl.textContent='Error al cargar el video desde el stream.';
+
+      try {
+        const res = await fetch(`/api/stream?fileId=${encodeURIComponent(fid)}`);
+        const text = await res.text();
+        errEl.textContent = "ERROR REAL: " + text;
+      } catch(e){
+        errEl.textContent='Error al cargar el video desde el stream.';
+      }
     };
 
     vid.play().catch(()=>{});
