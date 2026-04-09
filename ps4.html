@@ -47,7 +47,7 @@ h1 span{color:#00c4a7;}
 .btn-back-player:hover{border-color:#00c4a7;color:#00c4a7;}
 #player-title-bar{font-size:16px;font-weight:600;}
 
-/* Native video — full width, let PS4 handle controls */
+/* Native video */
 #ps4-video{
   width:100%;max-width:960px;display:block;
   border-radius:10px;background:#000;
@@ -84,7 +84,6 @@ h1 span{color:#00c4a7;}
   <button class="back-btn" onclick="window.location.href='/'">← Sitio principal</button>
 </nav>
 
-<!-- Catálogo -->
 <div id="home-view">
   <main>
     <h1>Catálogo <span>de Películas</span></h1>
@@ -93,7 +92,6 @@ h1 span{color:#00c4a7;}
   </main>
 </div>
 
-<!-- Reproductor -->
 <div id="player-view">
   <div class="player-container">
     <div class="player-header">
@@ -107,7 +105,7 @@ h1 span{color:#00c4a7;}
 </div>
 
 <script>
-// ── Starfield simple ──────────────────────────────────────────────────────────
+// Starfield simple
 (function(){
   const C=document.getElementById('bg'),ctx=C.getContext('2d');
   let W,H,stars=[];
@@ -129,7 +127,7 @@ h1 span{color:#00c4a7;}
   resize();draw();
 })();
 
-// ── Data ──────────────────────────────────────────────────────────────────────
+// Data
 let allVideos=[], visitId=null;
 
 function parseDriveId(url){
@@ -141,7 +139,10 @@ function parseDriveId(url){
 
 // Registrar visita de PS4
 async function registerVisit(){
-  if(sessionStorage.getItem('ct_visit_id')){visitId=sessionStorage.getItem('ct_visit_id');return;}
+  if(sessionStorage.getItem('ct_visit_id')){
+    visitId=sessionStorage.getItem('ct_visit_id');
+    return;
+  }
   try{
     const res=await fetch('/api/views',{
       method:'POST',
@@ -149,7 +150,10 @@ async function registerVisit(){
       body:JSON.stringify({})
     });
     const d=await res.json();
-    if(d.id){visitId=String(d.id);sessionStorage.setItem('ct_visit_id',visitId);}
+    if(d.id){
+      visitId=String(d.id);
+      sessionStorage.setItem('ct_visit_id',visitId);
+    }
   }catch(e){}
 }
 
@@ -159,7 +163,7 @@ async function loadVideos(){
     allVideos=await res.json();
     renderList();
   }catch(e){
-    document.getElementById('loading-screen').innerHTML='<p style="color:#ff5e57">Error al cargar. Recargá la página.</p>';
+    document.getElementById('loading-screen').innerHTML='<p style="color:#ff5e57">Error al cargar. Recarga la página.</p>';
   }
 }
 
@@ -167,7 +171,11 @@ function renderList(){
   document.getElementById('loading-screen').style.display='none';
   const list=document.getElementById('video-list');
   list.style.display='grid';
-  if(!allVideos.length){list.innerHTML='<p style="color:#6b7a8d">Sin películas disponibles.</p>';return;}
+  if(!allVideos.length){
+    list.innerHTML='<p style="color:#6b7a8d">Sin películas disponibles.</p>';
+    return;
+  }
+
   list.innerHTML=allVideos.map((v,i)=>{
     const fid=parseDriveId(v.drive_url);
     const thumb=v.thumb_url||(fid?`https://drive.google.com/thumbnail?id=${fid}&sz=w400`:'');
@@ -182,8 +190,14 @@ function renderList(){
 }
 
 async function playVideo(idx){
-  const v=allVideos[idx];if(!v)return;
-  const fid=parseDriveId(v.drive_url);if(!fid){alert('URL de Drive inválida');return;}
+  const v=allVideos[idx];
+  if(!v)return;
+
+  const fid=parseDriveId(v.drive_url);
+  if(!fid){
+    alert('URL de Drive inválida');
+    return;
+  }
 
   document.getElementById('home-view').style.display='none';
   document.getElementById('player-view').style.display='block';
@@ -194,7 +208,6 @@ async function playVideo(idx){
   vid.style.display='none';
   document.getElementById('ps4-loading').style.display='block';
 
-  // Actualizar historial con la peli
   if(visitId){
     try{
       await fetch(`/api/views?id=${visitId}`,{
@@ -205,16 +218,26 @@ async function playVideo(idx){
     }catch(e){}
   }
 
-  // Obtener URL directa de Google
+  // Importante:
+  // ahora el video usa directamente tu endpoint /api/stream
+  // para que PS4 no dependa de una URL directa de Drive
   try{
-    const res=await fetch(`/api/stream?fileId=${fid}&mode=redirect`);
-    const data=await res.json();
-    if(!data.url)throw new Error('Sin URL');
-    
-    vid.src=data.url;
-    vid.style.display='block';
-    document.getElementById('ps4-loading').style.display='none';
+    const streamUrl=`/api/stream?fileId=${encodeURIComponent(fid)}`;
+    vid.src=streamUrl;
     vid.load();
+
+    vid.onloadeddata=()=>{
+      document.getElementById('ps4-loading').style.display='none';
+      vid.style.display='block';
+    };
+
+    vid.onerror=()=>{
+      document.getElementById('ps4-loading').style.display='none';
+      const errEl=document.getElementById('ps4-error');
+      errEl.style.display='block';
+      errEl.textContent='Error al cargar el video desde el stream.';
+    };
+
     vid.play().catch(()=>{});
   }catch(e){
     document.getElementById('ps4-loading').style.display='none';
@@ -226,14 +249,19 @@ async function playVideo(idx){
 
 function backToList(){
   const vid=document.getElementById('ps4-video');
-  vid.pause();vid.src='';
+  vid.pause();
+  vid.src='';
   document.getElementById('player-view').style.display='none';
   document.getElementById('home-view').style.display='block';
 }
 
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 registerVisit();
 loadVideos();
 </script>
