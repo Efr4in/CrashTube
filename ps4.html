@@ -7,31 +7,22 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#0a0a0a;color:#e8edf3;font-family:sans-serif;min-height:100vh;}
-
-/* Simple starfield bg */
 canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-/* Nav */
 nav{position:sticky;top:0;z-index:10;background:rgba(7,9,15,0.95);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,196,167,0.15);}
 .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;}
 .brand .dot{width:26px;height:26px;background:#00c4a7;border-radius:7px;display:flex;align-items:center;justify-content:center;}
 .brand .dot svg{width:14px;height:14px;fill:#07090f;}
 .ps4-badge{background:rgba(0,100,255,0.15);border:1px solid rgba(0,100,255,0.4);color:#6ab0ff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;}
 .back-btn{background:transparent;border:1px solid #1e2d40;color:#6b7a8d;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;}
-.back-btn:hover{border-color:#00c4a7;color:#00c4a7;}
 
-/* Main */
 main{position:relative;z-index:1;padding:24px;}
-h1{font-size:18px;font-weight:600;margin-bottom:20px;color:#e8edf3;}
+h1{font-size:18px;font-weight:600;margin-bottom:20px;}
 h1 span{color:#00c4a7;}
 
-/* Video list */
 .video-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
-.video-item{
-  background:#111827;border:1px solid #1e2d40;border-radius:10px;
-  overflow:hidden;cursor:pointer;transition:border-color .2s,transform .2s;
-}
-.video-item:hover,.video-item:focus{border-color:#00c4a7;transform:scale(1.02);outline:none;}
+.video-item{background:#111827;border:2px solid #1e2d40;border-radius:10px;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.video-item:focus{border-color:#00c4a7;outline:none;}
 .vi-thumb{aspect-ratio:16/9;background:#0d1520;overflow:hidden;}
 .vi-thumb img{width:100%;height:100%;object-fit:cover;}
 .vi-body{padding:12px;}
@@ -39,36 +30,18 @@ h1 span{color:#00c4a7;}
 .vi-meta{font-size:11px;color:#6b7a8d;}
 .tag{background:rgba(0,196,167,0.1);color:#00c4a7;border-radius:4px;padding:1px 7px;font-size:10px;}
 
-/* Player view */
 #player-view{display:none;position:relative;z-index:1;}
 .player-container{padding:16px 24px;}
 .player-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
 .btn-back-player{background:transparent;border:1px solid #1e2d40;color:#6b7a8d;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;}
-.btn-back-player:hover{border-color:#00c4a7;color:#00c4a7;}
 #player-title-bar{font-size:16px;font-weight:600;}
 
-/* Native video */
-#ps4-video{
-  width:100%;max-width:960px;display:block;
-  border-radius:10px;background:#000;
-  border:1px solid #1e2d40;
-}
+#ps4-video{width:100%;max-width:960px;display:block;border-radius:10px;background:#000;border:1px solid #1e2d40;}
 
-/* Loading */
-#ps4-loading{
-  display:none;padding:40px;text-align:center;color:#6b7a8d;font-size:14px;
-}
-.sp{
-  width:36px;height:36px;border:2.5px solid rgba(255,255,255,0.1);
-  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;
-  margin:0 auto 12px;
-}
+#ps4-loading{padding:40px;text-align:center;color:#6b7a8d;font-size:14px;}
+.sp{width:36px;height:36px;border:2.5px solid rgba(255,255,255,0.1);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-/* Error */
-#ps4-error{display:none;padding:24px;background:#1a0d0d;border:1px solid rgba(255,94,87,0.3);border-radius:10px;color:#ff5e57;font-size:13px;margin-top:16px;}
-
-/* Loading screen */
+#ps4-error{display:none;padding:20px;background:#1a0d0d;border:1px solid rgba(255,94,87,0.3);border-radius:10px;color:#ff5e57;font-size:13px;margin-top:16px;}
 #loading-screen{padding:60px;text-align:center;color:#6b7a8d;}
 </style>
 </head>
@@ -98,14 +71,14 @@ h1 span{color:#00c4a7;}
       <button class="btn-back-player" onclick="backToList()">← Volver</button>
       <span id="player-title-bar"></span>
     </div>
-    <div id="ps4-loading"><div class="sp"></div><p>Obteniendo video...</p></div>
+    <div id="ps4-loading"><div class="sp"></div><p>Cargando video...</p></div>
     <video id="ps4-video" controls preload="auto" playsinline></video>
     <div id="ps4-error"></div>
   </div>
 </div>
 
 <script>
-// Starfield simple
+// ── Starfield ──────────────────────────────────────────────────────────────
 (function(){
   const C=document.getElementById('bg'),ctx=C.getContext('2d');
   let W,H,stars=[];
@@ -115,33 +88,24 @@ h1 span{color:#00c4a7;}
   }
   function draw(){
     ctx.clearRect(0,0,W,H);
-    stars.forEach(s=>{
-      s.tw+=s.ts;
-      const a=.2+.3*Math.sin(s.tw);
-      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(220,235,255,${a})`;ctx.fill();
-    });
+    stars.forEach(s=>{s.tw+=s.ts;const a=.2+.3*Math.sin(s.tw);ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(220,235,255,${a})`;ctx.fill();});
     requestAnimationFrame(draw);
   }
-  window.addEventListener('resize',resize);
-  resize();draw();
+  window.addEventListener('resize',resize);resize();draw();
 })();
 
-// Data
+// ── Data ───────────────────────────────────────────────────────────────────
 let allVideos=[], visitId=null;
 
 function parseDriveId(url){
-  const m=url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if(m)return m[1];
-  const m2=url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  return m2?m2[1]:null;
+  const m=url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);if(m)return m[1];
+  const m2=url.match(/[?&]id=([a-zA-Z0-9_-]+)/);return m2?m2[1]:null;
 }
 
-// Registrar visita de PS4
+// Registrar visita al entrar
 async function registerVisit(){
   if(sessionStorage.getItem('ct_visit_id')){
-    visitId=sessionStorage.getItem('ct_visit_id');
-    return;
+    visitId=sessionStorage.getItem('ct_visit_id');return;
   }
   try{
     const res=await fetch('/api/views',{
@@ -150,10 +114,7 @@ async function registerVisit(){
       body:JSON.stringify({})
     });
     const d=await res.json();
-    if(d.id){
-      visitId=String(d.id);
-      sessionStorage.setItem('ct_visit_id',visitId);
-    }
+    if(d.id){visitId=String(d.id);sessionStorage.setItem('ct_visit_id',visitId);}
   }catch(e){}
 }
 
@@ -163,7 +124,7 @@ async function loadVideos(){
     allVideos=await res.json();
     renderList();
   }catch(e){
-    document.getElementById('loading-screen').innerHTML='<p style="color:#ff5e57">Error al cargar. Recarga la página.</p>';
+    document.getElementById('loading-screen').innerHTML='<p style="color:#ff5e57">Error al cargar. Recargá la página.</p>';
   }
 }
 
@@ -171,11 +132,7 @@ function renderList(){
   document.getElementById('loading-screen').style.display='none';
   const list=document.getElementById('video-list');
   list.style.display='grid';
-  if(!allVideos.length){
-    list.innerHTML='<p style="color:#6b7a8d">Sin películas disponibles.</p>';
-    return;
-  }
-
+  if(!allVideos.length){list.innerHTML='<p style="color:#6b7a8d">Sin películas disponibles.</p>';return;}
   list.innerHTML=allVideos.map((v,i)=>{
     const fid=parseDriveId(v.drive_url);
     const thumb=v.thumb_url||(fid?`https://drive.google.com/thumbnail?id=${fid}&sz=w400`:'');
@@ -190,14 +147,9 @@ function renderList(){
 }
 
 async function playVideo(idx){
-  const v=allVideos[idx];
-  if(!v)return;
-
+  const v=allVideos[idx];if(!v)return;
   const fid=parseDriveId(v.drive_url);
-  if(!fid){
-    alert('URL de Drive inválida');
-    return;
-  }
+  if(!fid){alert('URL de Drive inválida');return;}
 
   document.getElementById('home-view').style.display='none';
   document.getElementById('player-view').style.display='block';
@@ -208,6 +160,7 @@ async function playVideo(idx){
   vid.style.display='none';
   document.getElementById('ps4-loading').style.display='block';
 
+  // Actualizar historial con la peli seleccionada
   if(visitId){
     try{
       await fetch(`/api/views?id=${visitId}`,{
@@ -218,33 +171,14 @@ async function playVideo(idx){
     }catch(e){}
   }
 
-  // Importante:
-  // ahora el video usa directamente tu endpoint /api/stream
-  // para que PS4 no dependa de una URL directa de Drive
+  // ── Reproducir usando el proxy directo de Vercel (mismo dominio) ──────────
+  // No usamos googleapis directamente porque PS4 bloquea cross-origin con token.
+  // El proxy de Vercel maneja la autenticación internamente.
   try{
-    const streamUrl=`/api/stream?fileId=${encodeURIComponent(fid)}`;
-    vid.src=streamUrl;
+    vid.src = `/api/stream?fileId=${fid}`;
     vid.load();
-
-    vid.onloadeddata=()=>{
-      document.getElementById('ps4-loading').style.display='none';
-      vid.style.display='block';
-    };
-
-    vid.onerror = async () => {
-      document.getElementById('ps4-loading').style.display='none';
-      const errEl=document.getElementById('ps4-error');
-      errEl.style.display='block';
-
-      try {
-        const res = await fetch(`/api/stream?fileId=${encodeURIComponent(fid)}`);
-        const text = await res.text();
-        errEl.textContent = "ERROR REAL: " + text;
-      } catch(e){
-        errEl.textContent='Error al cargar el video desde el stream.';
-      }
-    };
-
+    vid.style.display='block';
+    document.getElementById('ps4-loading').style.display='none';
     vid.play().catch(()=>{});
   }catch(e){
     document.getElementById('ps4-loading').style.display='none';
@@ -252,23 +186,25 @@ async function playVideo(idx){
     errEl.style.display='block';
     errEl.textContent='Error al cargar el video: '+e.message;
   }
+
+  vid.onerror=()=>{
+    document.getElementById('ps4-loading').style.display='none';
+    const errEl=document.getElementById('ps4-error');
+    errEl.style.display='block';
+    errEl.textContent='Error: el video no pudo reproducirse. Código: '+(vid.error?vid.error.code:'desconocido');
+  };
 }
 
 function backToList(){
   const vid=document.getElementById('ps4-video');
-  vid.pause();
-  vid.src='';
+  vid.pause();vid.src='';
   document.getElementById('player-view').style.display='none';
   document.getElementById('home-view').style.display='block';
 }
 
-function esc(s){
-  return String(s)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
-}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+// ── Init ───────────────────────────────────────────────────────────────────
 registerVisit();
 loadVideos();
 </script>
