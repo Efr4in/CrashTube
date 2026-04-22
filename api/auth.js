@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
 
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
 
-  // POST /api/auth?action=login  ← ÚNICO login para todo el sitio
+  // POST /api/auth?action=login
   if (action === 'login') {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Faltan credenciales' });
@@ -46,7 +46,8 @@ module.exports = async (req, res) => {
       const valid = await bcrypt.compare(password, admin.password_hash);
       if (!valid) return res.status(401).json({ error: 'Contraseña incorrecta' });
       const token = signToken({ id: admin.id, username: admin.username, role: 'admin' });
-      return res.status(200).json({ token, username: admin.username, role: 'admin' });
+      // ✅ id incluido para que SESSION.id funcione en el panel admin
+      return res.status(200).json({ token, id: admin.id, username: admin.username, role: 'admin' });
     }
 
     // 2. Buscar en users (profesores)
@@ -60,7 +61,15 @@ module.exports = async (req, res) => {
     if (!valid) return res.status(401).json({ error: 'Contraseña incorrecta' });
 
     const token = signToken({ id: user.id, username: user.username, full_name: user.full_name, role: user.role || 'user' });
-    return res.status(200).json({ token, username: user.username, full_name: user.full_name, role: user.role || 'user' });
+    // ✅ id incluido — esto era el bug: sin id, SESSION.id era undefined
+    // y el filtro en teacher.html nunca encontraba los videos del docente
+    return res.status(200).json({
+      token,
+      id: user.id,
+      username: user.username,
+      full_name: user.full_name,
+      role: user.role || 'user'
+    });
   }
 
   // POST /api/auth?action=register
@@ -106,7 +115,10 @@ module.exports = async (req, res) => {
       type: 'admin', read: false
     }]);
 
-    return res.status(201).json({ success: true, message: 'Solicitud enviada. El administrador revisará tu registro pronto.' });
+    return res.status(201).json({
+      success: true,
+      message: 'Solicitud enviada. El administrador revisará tu registro pronto.'
+    });
   }
 
   return res.status(400).json({ error: 'Acción no reconocida' });
