@@ -24,6 +24,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);display:
 .nav-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,196,167,0.1);}
 .nav-search input{flex:1;background:transparent;border:none;outline:none;padding:9px 18px;font-family:var(--font-body);font-size:14px;color:var(--text);}
 .nav-search input::placeholder{color:var(--muted);}
+.nav-search input{
+  flex:1;
+  background:transparent;
+  border:none;
+  outline:none;
+  padding:9px 12px;        /* reducir padding en móvil */
+  font-family:var(--font-body);
+  font-size:14px;
+  color:var(--text);
+  min-width:0;             /* ← AGREGAR ESTO para que no desborde */
+}
 .nav-search .ns-clear{background:transparent;border:none;padding:0 10px;cursor:pointer;color:var(--muted);display:none;align-items:center;transition:color .2s;}
 .nav-search .ns-clear.show{display:flex;}
 .nav-search .ns-clear:hover{color:var(--text);}
@@ -117,10 +128,34 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);display:
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* ══ NOTIFICACIONES DROPDOWN ════════════════════════════════════════════════ */
-.notif-panel{position:absolute;top:calc(100% + 10px);right:0;width:340px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,0.5);display:none;z-index:400;overflow:hidden;}
+/* NOTIFICACIONES DROPDOWN — responsive */
+.notif-panel{
+  position:fixed;           /* fixed en vez de absolute */
+  top:calc(var(--nav-h) + var(--chips-h) + 6px);
+  right:8px;
+  left:8px;                 /* ocupa casi todo el ancho en móvil */
+  max-width:360px;
+  margin-left:auto;         /* se pega a la derecha en desktop */
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 20px 50px rgba(0,0,0,.5);
+  display:none;
+  z-index:400;
+  overflow:hidden;
+}
 .notif-panel.open{display:block;}
-.notif-panel-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);}
-.notif-panel-header h3{font-family:var(--font-head);font-size:14px;font-weight:700;}
+
+/* En desktop con espacio suficiente: ancho fijo a la derecha */
+@media(min-width:500px){
+  .notif-panel{
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    left:auto;
+    width:340px;
+  }
+}
 .notif-mark-all{background:transparent;border:none;font-size:11px;color:var(--accent);cursor:pointer;font-family:var(--font-body);}
 .notif-list{max-height:340px;overflow-y:auto;}
 .notif-item{padding:12px 16px;border-bottom:1px solid rgba(30,45,64,0.5);cursor:pointer;transition:background .15s;display:flex;gap:10px;align-items:flex-start;}
