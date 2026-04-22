@@ -4,6 +4,8 @@
     { "source": "/login",    "destination": "/login.html" },
     { "source": "/admin",    "destination": "/admin.html" },
     { "source": "/ps4",      "destination": "/ps4.html" },
+    { "source": "/teacher", "destination": "/teacher.html" },
     { "source": "/(.*)",     "destination": "/CrashLand.html" }
+    
   ]
 }

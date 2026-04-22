@@ -2,6 +2,7 @@ const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+const BUCKET = 'thumbnails'; // Asegurate de crear este bucket en Supabase Storage como público
 
 function cors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,30 +24,49 @@ module.exports = async (req, res) => {
   const caller = verifyToken(req);
   if (!caller) return res.status(401).json({ error: 'No autorizado' });
 
-  // Recibe: { base64: "data:image/jpeg;base64,...", filename: "portada.jpg" }
   const { base64, filename } = req.body;
-  if (!base64 || !filename) return res.status(400).json({ error: 'Faltan datos' });
+  if (!base64 || !filename) return res.status(400).json({ error: 'Faltan datos: base64 y filename son requeridos' });
 
   try {
-    // Extraer tipo MIME y datos del base64
+    // Validar formato base64
     const match = base64.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9+.-]+);base64,(.+)$/);
-    if (!match) return res.status(400).json({ error: 'Formato de imagen inválido' });
+    if (!match) return res.status(400).json({ error: 'Formato de imagen inválido. Usá JPG, PNG o WEBP.' });
 
     const mimeType = match[1];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(mimeType)) {
+      return res.status(400).json({ error: `Tipo de imagen no permitido: ${mimeType}` });
+    }
+
     const buffer = Buffer.from(match[2], 'base64');
 
-    // Nombre único para evitar colisiones
-    const ext = filename.split('.').pop().toLowerCase();
+    // Limitar tamaño a 5MB
+    if (buffer.length > 5 * 1024 * 1024) {
+      return res.status(400).json({ error: 'La imagen no puede superar los 5MB' });
+    }
+
+    const ext = mimeType.split('/')[1].replace('jpeg', 'jpg');
     const safeName = `thumb_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('thumbnails')
+      .from(BUCKET)
       .upload(safeName, buffer, { contentType: mimeType, upsert: false });
 
-    if (uploadError) throw uploadError;
+    if (uploadError) {
+      // Mensaje de error específico para bucket no encontrado
+      if (uploadError.message && uploadError.message.toLowerCase().includes('bucket')) {
+        return res.status(500).json({
+          error: `El bucket "${BUCKET}" no existe en Supabase Storage. Crealo en: Supabase → Storage → New Bucket → "${BUCKET}" → marcar como público.`
+        });
+      }
+      throw uploadError;
+    }
 
-    const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/thumbnails/${safeName}`;
-    return res.status(200).json({ url: publicUrl });
+    // Construir URL pública
+    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(safeName);
+    const publicUrl = urlData?.publicUrl || `${process.env.SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${safeName}`;
+
+    return res.status(200).json({ url: publicUrl, filename: safeName });
 
   } catch (e) {
     console.error('Upload error:', e.message);

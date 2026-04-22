@@ -11,7 +11,7 @@
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 
-/* ── LOGIN SCREEN ─────────────────────────────────────────────────────────── */
+/* ── LOGIN ────────────────────────────────────────────────────────────────── */
 #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:radial-gradient(ellipse at 50% 0%,rgba(0,196,167,0.08) 0%,transparent 70%);}
 .login-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 32px;width:100%;max-width:380px;box-shadow:0 30px 60px rgba(0,0,0,0.4);}
 .login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
@@ -23,19 +23,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .login-sub{font-size:12px;color:var(--muted);margin-bottom:24px;}
 .form-group{margin-bottom:16px;}
 .form-group label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase;}
-.form-group input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:var(--font-body);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
-.form-group input:focus{border-color:var(--accent);}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:var(--font-body);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);}
+.form-group textarea{resize:vertical;min-height:80px;}
 .btn-login{width:100%;padding:11px;border-radius:8px;border:none;background:var(--accent);color:#07090f;font-family:var(--font-body);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px;}
 .btn-login:hover{background:#00dfc0;}
 .btn-login:disabled{opacity:.5;cursor:not-allowed;}
 .login-err{font-size:12px;color:var(--accent2);background:rgba(255,94,87,0.1);border:1px solid rgba(255,94,87,0.2);border-radius:6px;padding:8px 12px;margin-top:12px;display:none;}
 
+/* Botón volver al inicio en login */
+.login-back{display:block;text-align:center;margin-top:16px;font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.login-back:hover{color:var(--accent);}
+
 /* ── APP LAYOUT ───────────────────────────────────────────────────────────── */
-#app{display:none;height:100vh;display:none;grid-template-columns:var(--sidebar) 1fr;grid-template-rows:56px 1fr;overflow:hidden;}
+#app{display:none;height:100vh;grid-template-columns:var(--sidebar) 1fr;grid-template-rows:56px 1fr;overflow:hidden;}
 #app.ready{display:grid;}
 
-/* Top bar */
-.topbar{grid-column:1/-1;background:rgba(7,9,15,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:0 24px;backdrop-filter:blur(10px);}
+/* Topbar */
+.topbar{grid-column:1/-1;background:rgba(7,9,15,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:0 20px;backdrop-filter:blur(10px);}
 .topbar-brand{font-family:var(--font-head);font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;color:var(--text);}
 .topbar-brand .dot{width:26px;height:26px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;}
 .topbar-brand .dot svg{width:13px;height:13px;fill:#07090f;}
@@ -43,48 +48,52 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .topbar-spacer{flex:1;}
 .topbar-user{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);}
 .topbar-user strong{color:var(--text);}
-.btn-sm{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-body);font-size:12px;cursor:pointer;transition:all .2s;}
-.btn-sm:hover{border-color:var(--accent2);color:var(--accent2);}
+.btn-sm{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-body);font-size:12px;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+.btn-sm:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
 .btn-sm.primary{background:var(--accent);border-color:var(--accent);color:#07090f;font-weight:600;}
 .btn-sm.primary:hover{background:#00dfc0;border-color:#00dfc0;}
+.btn-sm.danger{border-color:rgba(255,94,87,0.3);color:var(--accent2);}
+.btn-sm.danger:hover{background:rgba(255,94,87,0.1);}
 
 /* Sidebar */
-.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:16px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
-.sidebar-section{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:12px 10px 6px;}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.sidebar-section{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:14px 10px 5px;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;border:1px solid transparent;user-select:none;}
 .nav-item:hover{background:rgba(0,196,167,0.06);color:var(--text);}
 .nav-item.active{background:rgba(0,196,167,0.1);border-color:rgba(0,196,167,0.2);color:var(--accent);}
 .nav-item svg{width:16px;height:16px;stroke:currentColor;fill:none;flex-shrink:0;}
-.nav-badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;}
-.sidebar-bottom{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);}
-.sidebar-bottom a{display:block;font-size:12px;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:6px;transition:color .15s;}
-.sidebar-bottom a:hover{color:var(--accent);}
+.nav-badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;min-width:18px;text-align:center;}
+.sidebar-bottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:4px;}
+.sidebar-link{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:6px;transition:all .2s;cursor:pointer;background:transparent;border:none;width:100%;font-family:var(--font-body);}
+.sidebar-link:hover{color:var(--accent);background:rgba(0,196,167,0.06);}
+.sidebar-link svg{width:14px;height:14px;stroke:currentColor;fill:none;flex-shrink:0;}
+.sidebar-link.logout:hover{color:var(--accent2);background:rgba(255,94,87,0.06);}
 
-/* Main content */
+/* Main */
 .main{overflow-y:auto;background:var(--bg);}
-.section{display:none;padding:28px 28px;max-width:1300px;}
+.section{display:none;padding:28px;}
 .section.active{display:block;}
 .page-title{font-family:var(--font-head);font-size:22px;font-weight:800;margin-bottom:4px;}
 .page-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
 
 /* Stats */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:28px;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px;}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
 .stat-num{font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--accent);line-height:1;}
 .stat-label{font-size:12px;color:var(--muted);margin-top:4px;}
 
 /* Search bar */
-.search-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.search-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-family:var(--font-body);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
+.search-bar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.search-input{flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-family:var(--font-body);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
 .search-input:focus{border-color:var(--accent);}
 .search-input::placeholder{color:var(--muted);}
 
 /* Table */
-.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-table{width:100%;border-collapse:collapse;}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:500px;}
 thead tr{background:var(--surface);}
-th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);}
-td{padding:11px 16px;border-bottom:1px solid rgba(30,45,64,0.5);font-size:13px;vertical-align:middle;}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:11px 14px;border-bottom:1px solid rgba(30,45,64,0.5);font-size:13px;vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(0,196,167,0.02);}
 .tag{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
@@ -94,7 +103,6 @@ tr:hover td{background:rgba(0,196,167,0.02);}
 .tag.blue{background:rgba(96,165,250,0.1);color:#60a5fa;border:1px solid rgba(96,165,250,0.2);}
 .actions{display:flex;gap:6px;flex-wrap:wrap;}
 .act-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-body);transition:all .15s;white-space:nowrap;}
-.act-btn:hover{background:var(--surface);}
 .act-btn.success{color:var(--accent);border-color:rgba(0,196,167,0.3);}
 .act-btn.success:hover{background:rgba(0,196,167,0.1);}
 .act-btn.danger{color:var(--accent2);border-color:rgba(255,94,87,0.3);}
@@ -103,47 +111,50 @@ tr:hover td{background:rgba(0,196,167,0.02);}
 .act-btn.info:hover{background:rgba(96,165,250,0.1);}
 .empty-row td{text-align:center;padding:40px;color:var(--muted);}
 
-/* Thumbnails en tabla */
-.thumb-cell{width:80px;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--surface);}
+/* Thumb cell */
+.thumb-cell{width:72px;height:40px;border-radius:5px;overflow:hidden;background:var(--surface);flex-shrink:0;}
 .thumb-cell img{width:100%;height:100%;object-fit:cover;}
 
-/* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+/* ── MODAL ──────────────────────────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 30px 60px rgba(0,0,0,0.5);}
-.modal-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:1;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:0 30px 60px rgba(0,0,0,0.5);}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:2;}
 .modal-header h2{font-family:var(--font-head);font-size:17px;font-weight:800;}
-.modal-close{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;}
+.modal-close{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;transition:color .15s;}
 .modal-close:hover{color:var(--text);}
-.modal-close svg{width:18px;height:18px;stroke:currentColor;fill:none;}
-.modal-body{padding:24px;}
+.modal-close svg{width:18px;height:18px;stroke:currentColor;fill:none;display:block;}
+.modal-body{padding:22px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.msg{font-size:12px;text-align:center;padding:10px 12px;border-radius:6px;margin-top:12px;display:none;}
+.msg{font-size:12px;padding:10px 12px;border-radius:6px;margin-top:12px;display:none;}
 .msg.error{background:rgba(255,94,87,0.1);color:var(--accent2);border:1px solid rgba(255,94,87,0.2);display:block;}
 .msg.success{background:rgba(0,196,167,0.1);color:var(--accent);border:1px solid rgba(0,196,167,0.2);display:block;}
-.btn-full{width:100%;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#07090f;font-family:var(--font-body);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;}
+.btn-full{width:100%;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#07090f;font-family:var(--font-body);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:4px;}
 .btn-full:hover{background:#00dfc0;}
 .btn-full:disabled{opacity:.5;cursor:not-allowed;}
 
-/* Notif form */
+/* Notif section */
 .notif-form{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;}
 .notif-form h3{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:14px;}
-.notif-textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:var(--font-body);font-size:13px;color:var(--text);outline:none;resize:vertical;min-height:80px;transition:border-color .2s;}
-.notif-textarea:focus{border-color:var(--accent);}
-.notif-select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-family:var(--font-body);font-size:13px;color:var(--text);outline:none;margin-bottom:10px;}
-.notif-row{display:flex;gap:10px;margin-top:10px;}
+.notif-row{display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap;}
 
-/* Image preview */
-.img-preview{width:100%;aspect-ratio:16/9;background:var(--surface);border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;margin-bottom:8px;transition:border-color .2s;}
-.img-preview:hover{border-color:var(--accent);}
-.img-preview img{width:100%;height:100%;object-fit:cover;}
-.img-preview span{font-size:12px;color:var(--muted);}
+/* Image upload */
+.img-upload-area{width:100%;aspect-ratio:16/9;background:var(--surface);border:2px dashed var(--border);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color .2s;gap:8px;}
+.img-upload-area:hover{border-color:var(--accent);}
+.img-upload-area img{width:100%;height:100%;object-fit:cover;}
+.img-upload-area svg{width:28px;height:28px;stroke:var(--muted);fill:none;opacity:.6;}
+.img-upload-area span{font-size:11px;color:var(--muted);}
 #fileInput{display:none;}
 
 /* Toast */
-.toast{position:fixed;bottom:20px;right:20px;z-index:600;background:rgba(13,17,23,0.97);border:1px solid var(--accent);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:500;color:var(--accent);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(0.175,0.885,0.32,1.275);pointer-events:none;}
+.toast{position:fixed;bottom:20px;right:20px;z-index:600;background:rgba(13,17,23,0.97);border:1px solid var(--accent);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:500;color:var(--accent);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(0.175,0.885,0.32,1.275);pointer-events:none;max-width:calc(100vw - 40px);}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.error{border-color:var(--accent2);color:var(--accent2);}
+
+/* Separador en sección admins */
+.section-divider{border:none;border-top:1px solid var(--border);margin:28px 0;}
+.subsection-title{font-family:var(--font-head);font-size:16px;font-weight:700;margin-bottom:4px;}
+.subsection-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
 </style>
 </head>
 <body>
@@ -153,10 +164,7 @@ tr:hover td{background:rgba(0,196,167,0.02);}
   <div class="login-box">
     <div class="login-logo">
       <div class="dot"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-      <div>
-        <span>CrashTube</span>
-        <small>Panel Administrador</small>
-      </div>
+      <div><span>CrashTube</span><small>Panel Administrador</small></div>
     </div>
     <h1 class="login-title">Acceso</h1>
     <p class="login-sub">Ingresá con tu cuenta de administrador</p>
@@ -164,12 +172,12 @@ tr:hover td{background:rgba(0,196,167,0.02);}
     <div class="form-group"><label>Contraseña</label><input type="password" id="lPass" placeholder="••••••••" autocomplete="current-password"/></div>
     <button class="btn-login" id="btnLogin" onclick="doLogin()">Ingresar al Panel</button>
     <div class="login-err" id="loginErr"></div>
+    <a href="/" class="login-back">← Volver al sitio principal</a>
   </div>
 </div>
 
 <!-- ── APP ────────────────────────────────────────────────────────────────── -->
 <div id="app">
-  <!-- Topbar -->
   <div class="topbar">
     <div class="topbar-brand">
       <div class="dot"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
@@ -180,64 +188,73 @@ tr:hover td{background:rgba(0,196,167,0.02);}
     <div class="topbar-user">
       <span>Hola, <strong id="topbarUser"></strong></span>
       <a href="/" class="btn-sm">← Ver sitio</a>
-      <button class="btn-sm" onclick="logout()">Salir</button>
     </div>
   </div>
 
-  <!-- Sidebar -->
   <nav class="sidebar">
     <div class="sidebar-section">General</div>
-    <div class="nav-item active" onclick="goTo('dashboard')">
+    <div class="nav-item active" data-sec="dashboard" onclick="goTo(this,'dashboard')">
       <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Dashboard
     </div>
+
     <div class="sidebar-section">Contenido</div>
-    <div class="nav-item" onclick="goTo('videos')">
+    <div class="nav-item" data-sec="videos" onclick="goTo(this,'videos')">
       <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
       Videos
     </div>
+
     <div class="sidebar-section">Usuarios</div>
-    <div class="nav-item" onclick="goTo('requests')">
+    <div class="nav-item" data-sec="requests" onclick="goTo(this,'requests')">
       <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 2v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
       Solicitudes
       <span class="nav-badge" id="reqBadge" style="display:none">0</span>
     </div>
-    <div class="nav-item" onclick="goTo('users')">
-      <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 2v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    <div class="nav-item" data-sec="users" onclick="goTo(this,'users')">
+      <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 2v2"/><circle cx="9" cy="7" r="4"/></svg>
       Profesores
     </div>
+
     <div class="sidebar-section">Comunicación</div>
-    <div class="nav-item" onclick="goTo('notifications')">
+    <div class="nav-item" data-sec="notifs" onclick="goTo(this,'notifs')">
       <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       Notificaciones
     </div>
+
     <div class="sidebar-section">Sistema</div>
-    <div class="nav-item" onclick="goTo('admins')">
+    <div class="nav-item" data-sec="admins" onclick="goTo(this,'admins')">
       <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Super Admins
+      Administradores
     </div>
+
     <div class="sidebar-bottom">
-      <a href="/">← Volver al sitio</a>
+      <a href="/" class="sidebar-link">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Ver sitio principal
+      </a>
+      <button class="sidebar-link logout" onclick="logout()">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar sesión
+      </button>
     </div>
   </nav>
 
-  <!-- Main -->
   <main class="main">
 
     <!-- DASHBOARD -->
     <div class="section active" id="sec-dashboard">
       <h1 class="page-title">Dashboard</h1>
       <p class="page-sub">Vista general del sistema</p>
-      <div class="stats-grid" id="statsGrid">
+      <div class="stats-grid">
         <div class="stat-card"><div class="stat-num" id="st-videos">–</div><div class="stat-label">Videos totales</div></div>
         <div class="stat-card"><div class="stat-num" id="st-users">–</div><div class="stat-label">Profesores activos</div></div>
         <div class="stat-card"><div class="stat-num" id="st-pending">–</div><div class="stat-label">Solicitudes pendientes</div></div>
         <div class="stat-card"><div class="stat-num" id="st-cats">–</div><div class="stat-label">Categorías únicas</div></div>
       </div>
-      <p class="page-sub" style="margin-bottom:12px">Actividad reciente</p>
+      <p class="page-sub" style="margin-bottom:12px">Videos recientes</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Video</th><th>Categoría</th><th>Género</th><th>Año</th></tr></thead>
+          <thead><tr><th></th><th>Título</th><th>Categoría</th><th>Género</th><th>Año</th></tr></thead>
           <tbody id="recentVids"></tbody>
         </table>
       </div>
@@ -246,7 +263,7 @@ tr:hover td{background:rgba(0,196,167,0.02);}
     <!-- VIDEOS -->
     <div class="section" id="sec-videos">
       <h1 class="page-title">Videos</h1>
-      <p class="page-sub">Control total sobre todos los videos del sitio</p>
+      <p class="page-sub">Control total sobre todo el contenido del sitio</p>
       <div class="search-bar">
         <input class="search-input" id="vidSearch" placeholder="Buscar por título, categoría, género…" oninput="filterVideos()"/>
         <button class="btn-sm primary" onclick="openVideoModal()">+ Agregar video</button>
@@ -262,16 +279,16 @@ tr:hover td{background:rgba(0,196,167,0.02);}
     <!-- SOLICITUDES -->
     <div class="section" id="sec-requests">
       <h1 class="page-title">Solicitudes de Registro</h1>
-      <p class="page-sub">Registros pendientes de aprobación. Sin tu validación, el usuario no puede ingresar.</p>
+      <p class="page-sub">Registros pendientes de aprobación. Sin tu validación, el usuario no puede ingresar al sistema.</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Nombre completo</th><th>Usuario</th><th>Área / Materia</th><th>Email</th><th>Dispositivo</th><th>Fecha</th><th>Acciones</th></tr></thead>
+          <thead><tr><th>Nombre</th><th>Usuario</th><th>Área / Materia</th><th>Email</th><th>Dispositivo</th><th>Fecha</th><th>Acciones</th></tr></thead>
           <tbody id="reqTableBody"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- USUARIOS/PROFESORES -->
+    <!-- PROFESORES -->
     <div class="section" id="sec-users">
       <h1 class="page-title">Profesores Activos</h1>
       <p class="page-sub">Listado de profesores con acceso aprobado al sistema</p>
@@ -280,46 +297,56 @@ tr:hover td{background:rgba(0,196,167,0.02);}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Nombre</th><th>Usuario</th><th>Área / Materia</th><th>Email</th><th>Videos</th><th>Acciones</th></tr></thead>
+          <thead><tr><th>Nombre completo</th><th>Usuario</th><th>Área / Materia</th><th>Email</th><th>Videos</th><th>Acciones</th></tr></thead>
           <tbody id="userTableBody"></tbody>
         </table>
       </div>
     </div>
 
     <!-- NOTIFICACIONES -->
-    <div class="section" id="sec-notifications">
+    <div class="section" id="sec-notifs">
       <h1 class="page-title">Notificaciones</h1>
       <p class="page-sub">Enviá avisos, advertencias o comunicados a los profesores</p>
       <div class="notif-form">
-        <h3>Enviar notificación</h3>
-        <select class="notif-select" id="notifTarget">
-          <option value="">📢 Broadcast — Todos los usuarios</option>
-        </select>
-        <textarea class="notif-textarea" id="notifMsg" placeholder="Escribí tu mensaje aquí…"></textarea>
+        <h3>Enviar mensaje</h3>
+        <div class="form-group">
+          <label>Destinatario</label>
+          <select id="notifTarget">
+            <option value="">📢 Todos los profesores (broadcast)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Mensaje</label>
+          <textarea id="notifMsg" placeholder="Escribí tu mensaje aquí…"></textarea>
+        </div>
         <div class="notif-row">
           <button class="btn-sm primary" onclick="sendNotif()">Enviar</button>
-          <span id="notifSendMsg" style="font-size:12px;color:var(--accent);align-self:center;"></span>
+          <span id="notifSendFeedback" style="font-size:12px;"></span>
         </div>
       </div>
-      <p class="page-sub" style="margin-bottom:12px">Historial de notificaciones del sistema</p>
+      <p class="page-sub" style="margin-bottom:12px">Historial</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Mensaje</th><th>Para</th><th>Tipo</th><th>Fecha</th><th></th></tr></thead>
+          <thead><tr><th>Mensaje</th><th>Para</th><th>Fecha</th><th></th></tr></thead>
           <tbody id="notifHistory"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- SUPER ADMINS -->
+    <!-- ADMINISTRADORES (antes "Super Admins") -->
     <div class="section" id="sec-admins">
-      <h1 class="page-title">Super Administradores</h1>
-      <p class="page-sub">Solo los super admins tienen control total del panel</p>
+      <h1 class="page-title">Administradores</h1>
+      <p class="page-sub">Los administradores tienen acceso completo al panel. El registro es inmediato, sin necesidad de validación.</p>
+
+      <!-- Lista de admins actuales -->
+      <div class="subsection-title">Administradores registrados</div>
+      <p class="subsection-sub">Solo vos podés agregar o eliminar administradores desde aquí.</p>
       <div class="search-bar">
-        <button class="btn-sm primary" onclick="openAddAdminModal()">+ Agregar super admin</button>
+        <button class="btn-sm primary" onclick="openAddAdminModal()">+ Agregar administrador</button>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Usuario</th><th>Creado</th><th>Acciones</th></tr></thead>
+          <thead><tr><th>Usuario</th><th>Registrado</th><th>Acciones</th></tr></thead>
           <tbody id="adminTableBody"></tbody>
         </table>
       </div>
@@ -334,8 +361,8 @@ tr:hover td{background:rgba(0,196,167,0.02);}
 <div class="modal-overlay" id="videoModal">
   <div class="modal">
     <div class="modal-header">
-      <h2 id="vmTitle">Agregar video</h2>
-      <button class="modal-close" onclick="closeVideoModal()"><svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <h2 id="vmModalTitle">Agregar video</h2>
+      <button class="modal-close" onclick="closeModal('videoModal')"><svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="vmId"/>
@@ -343,17 +370,17 @@ tr:hover td{background:rgba(0,196,167,0.02);}
       <div class="form-group"><label>URL de Google Drive *</label><input type="text" id="vmDrive" placeholder="https://drive.google.com/file/d/…"/></div>
       <div class="form-row">
         <div class="form-group"><label>Categoría (tipo)</label><input type="text" id="vmCat" placeholder="Película, Serie, Doc…"/></div>
-        <div class="form-group"><label>Género</label><input type="text" id="vmGenre" placeholder="Acción, Terror, Comedia…"/></div>
+        <div class="form-group"><label>Género</label><input type="text" id="vmGenre" placeholder="Acción, Terror…"/></div>
       </div>
       <div class="form-group"><label>Año</label><input type="number" id="vmYear" placeholder="2024" min="1900" max="2099"/></div>
       <div class="form-group"><label>Descripción / Sinopsis</label><input type="text" id="vmDesc" placeholder="Breve descripción…"/></div>
       <div class="form-group">
         <label>Imagen de portada</label>
-        <div class="img-preview" id="imgPreview" onclick="document.getElementById('fileInput').click()">
+        <div class="img-upload-area" id="vmImgPreview" onclick="document.getElementById('fileInput').click()">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <span>Clic para seleccionar imagen (JPG, PNG, WEBP…)</span>
         </div>
         <input type="file" id="fileInput" accept="image/*" onchange="previewImage(this)"/>
-        <input type="text" id="vmThumb" placeholder="O pegá URL directa de imagen…" style="margin-top:6px;" oninput="syncThumbFromUrl()"/>
       </div>
       <button class="btn-full" id="vmSaveBtn" onclick="saveVideo()">Guardar</button>
       <div class="msg" id="vmMsg"></div>
@@ -361,179 +388,173 @@ tr:hover td{background:rgba(0,196,167,0.02);}
   </div>
 </div>
 
-<!-- MODAL ADD ADMIN -->
+<!-- MODAL AGREGAR ADMIN -->
 <div class="modal-overlay" id="addAdminModal">
   <div class="modal">
     <div class="modal-header">
-      <h2>Agregar Super Admin</h2>
-      <button class="modal-close" onclick="document.getElementById('addAdminModal').classList.remove('open')"><svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <h2>Agregar Administrador</h2>
+      <button class="modal-close" onclick="closeModal('addAdminModal')"><svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
-      <div class="form-group"><label>Usuario *</label><input type="text" id="aaUser" placeholder="Nombre de usuario"/></div>
-      <div class="form-group"><label>Contraseña *</label><input type="password" id="aaPass" placeholder="Mínimo 8 caracteres"/></div>
-      <button class="btn-full" id="aaSaveBtn" onclick="saveAdmin()">Crear super admin</button>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;">El nuevo administrador tendrá acceso inmediato al panel completo. Su cuenta no requiere validación.</p>
+      <div class="form-group"><label>Nombre de usuario *</label><input type="text" id="aaUser" placeholder="usuario único"/></div>
+      <div class="form-group"><label>Contraseña *</label><input type="password" id="aaPass" placeholder="Mínimo 6 caracteres"/></div>
+      <button class="btn-full" id="aaSaveBtn" onclick="saveAdmin()">Crear administrador</button>
       <div class="msg" id="aaMsg"></div>
     </div>
   </div>
 </div>
 
 <script>
-/* ══ ESTADO ═══════════════════════════════════════════════════════════════ */
+/* ══ ESTADO ══════════════════════════════════════════════════════════════ */
 let SESSION = null;
-let allVideos = [], allUsers = [], allRequests = [], allAdmins = [], allNotifs = [];
+let allVideos=[], allUsers=[], allRequests=[], allAdmins=[], allNotifUsers=[];
 let selectedFile = null;
 
-function getToken(){ return SESSION ? SESSION.token : null; }
-function authH(){ return { 'Content-Type':'application/json', 'Authorization': `Bearer ${getToken()}` }; }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function showToast(msg,err=false){ const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' error':'');t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000); }
+function authH(){ return {'Content-Type':'application/json','Authorization':`Bearer ${SESSION.token}`}; }
 function parseDriveId(url){ const m=(url||'').match(/\/file\/d\/([a-zA-Z0-9_-]+)/);return m?m[1]:null; }
+function showToast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(err?' error':'');
+  t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
-/* ══ INIT: VERIFICAR SESIÓN EXISTENTE ════════════════════════════════════ */
+/* ══ INIT ════════════════════════════════════════════════════════════════ */
 (function init(){
-  // Leer sesión de localStorage (clave compartida con CrashLand.html)
-  const raw = localStorage.getItem('ct_session');
+  const raw=localStorage.getItem('ct_session');
   if(raw){
-    try {
-      const s = JSON.parse(raw);
-      if(s && s.role === 'admin'){
-        SESSION = s;
-        bootApp();
-        return;
-      }
-    } catch {}
+    try{
+      const s=JSON.parse(raw);
+      if(s && s.role==='admin'){ SESSION=s; bootApp(); return; }
+    }catch{}
   }
-  // Sin sesión de admin → mostrar login
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('lPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('lPass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
 })();
 
 function bootApp(){
-  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display='none';
   document.getElementById('app').classList.add('ready');
-  document.getElementById('topbarUser').textContent = SESSION.username;
+  document.getElementById('topbarUser').textContent=SESSION.username;
   loadAll();
 }
 
 /* ══ LOGIN ═══════════════════════════════════════════════════════════════ */
 async function doLogin(){
-  const username = document.getElementById('lUser').value.trim();
-  const password = document.getElementById('lPass').value;
-  const btn = document.getElementById('btnLogin');
-  const err = document.getElementById('loginErr');
-  if(!username || !password){ err.textContent='Completá los campos.'; err.style.display='block'; return; }
-  btn.disabled=true; btn.textContent='Verificando…';
+  const username=document.getElementById('lUser').value.trim();
+  const password=document.getElementById('lPass').value;
+  const btn=document.getElementById('btnLogin');
+  const errEl=document.getElementById('loginErr');
+  errEl.style.display='none';
+  if(!username||!password){ errEl.textContent='Completá los campos.';errEl.style.display='block';return; }
+  btn.disabled=true;btn.textContent='Verificando…';
   try{
-    const r = await fetch('/api/auth?action=login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
-    const d = await r.json();
-    if(!r.ok){ err.textContent=d.error||'Error al iniciar sesión'; err.style.display='block'; return; }
-    if(d.role !== 'admin'){ err.textContent='Esta cuenta no tiene permisos de administrador.'; err.style.display='block'; return; }
-    SESSION = d;
-    localStorage.setItem('ct_session', JSON.stringify(d));
+    const r=await fetch('/api/auth?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+    const d=await r.json();
+    if(!r.ok||d.role!=='admin'){
+      errEl.textContent=d.role&&d.role!=='admin'?'Esta cuenta no tiene permisos de administrador.':(d.error||'Error al iniciar sesión');
+      errEl.style.display='block';return;
+    }
+    SESSION=d;
+    localStorage.setItem('ct_session',JSON.stringify(d));
     bootApp();
-  }catch(e){ err.textContent='Error de conexión'; err.style.display='block'; }
-  finally{ btn.disabled=false; btn.textContent='Ingresar al Panel'; }
+  }catch(e){ errEl.textContent='Error de conexión';errEl.style.display='block'; }
+  finally{ btn.disabled=false;btn.textContent='Ingresar al Panel'; }
 }
 
 function logout(){
+  if(!confirm('¿Cerrar sesión?')) return;
   localStorage.removeItem('ct_session');
-  location.reload();
+  window.location.href='/'; // ← redirige al inicio
 }
 
 /* ══ NAVEGACIÓN ══════════════════════════════════════════════════════════ */
-function goTo(section){
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+function goTo(el, section){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
   document.getElementById('sec-'+section).classList.add('active');
 }
 
 /* ══ CARGA DE DATOS ══════════════════════════════════════════════════════ */
 async function loadAll(){
-  await Promise.all([loadVideos(), loadUsers(), loadRequests(), loadAdmins(), loadNotifHistory()]);
+  await Promise.all([loadVideos(),loadUsers(),loadRequests(),loadAdmins(),loadNotifHistory()]);
   updateDashboard();
   updateRequestBadge();
   populateNotifSelect();
 }
 
 async function loadVideos(){
-  const r = await fetch('/api/videos');
-  allVideos = await r.json();
+  const r=await fetch('/api/videos');
+  allVideos=await r.json();
   renderVideos(allVideos);
 }
-
 async function loadUsers(){
-  const r = await fetch('/api/users?filter=validated', { headers: authH() });
-  allUsers = await r.json();
+  const r=await fetch('/api/users?filter=validated',{headers:authH()});
+  allUsers=await r.json();
   renderUsers(allUsers);
 }
-
 async function loadRequests(){
-  const r = await fetch('/api/users?filter=pending', { headers: authH() });
-  allRequests = await r.json();
+  const r=await fetch('/api/users?filter=pending',{headers:authH()});
+  allRequests=await r.json();
   renderRequests(allRequests);
   updateRequestBadge();
 }
-
 async function loadAdmins(){
-  const r = await fetch('/api/users?action=admins', { headers: authH() });
-  allAdmins = Array.isArray(await r.clone().json()) ? await r.json() : [];
-  // Re-fetch properly
-  const r2 = await fetch('/api/users?action=admins', { headers: authH() });
-  allAdmins = await r2.json();
+  const r=await fetch('/api/users?action=admins',{headers:authH()});
+  allAdmins=await r.json();
   renderAdmins(allAdmins);
 }
-
 async function loadNotifHistory(){
-  const r = await fetch('/api/notifications', { headers: authH() });
-  const d = await r.json();
-  allNotifs = d.notifications || [];
-  renderNotifHistory(allNotifs);
+  const r=await fetch('/api/notifications',{headers:authH()});
+  const d=await r.json();
+  renderNotifHistory(d.notifications||[]);
 }
 
 function updateDashboard(){
-  document.getElementById('st-videos').textContent = allVideos.length;
-  document.getElementById('st-users').textContent = allUsers.length;
-  document.getElementById('st-pending').textContent = allRequests.length;
-  const cats = new Set(allVideos.map(v => v.category).filter(Boolean));
-  document.getElementById('st-cats').textContent = cats.size;
-  // Últimos 8 videos
-  document.getElementById('recentVids').innerHTML = allVideos.slice(0,8).map(v => `
+  document.getElementById('st-videos').textContent=allVideos.length;
+  document.getElementById('st-users').textContent=allUsers.length;
+  document.getElementById('st-pending').textContent=allRequests.length;
+  document.getElementById('st-cats').textContent=new Set(allVideos.map(v=>v.category).filter(Boolean)).size;
+  document.getElementById('recentVids').innerHTML=allVideos.slice(0,8).map(v=>`
     <tr>
-      <td><strong>${esc(v.title)}</strong></td>
-      <td>${v.category ? `<span class="tag green">${esc(v.category)}</span>` : '—'}</td>
-      <td>${v.genre ? `<span class="tag blue">${esc(v.genre)}</span>` : '—'}</td>
-      <td>${v.year || '—'}</td>
-    </tr>`).join('') || '<tr class="empty-row"><td colspan="4">Sin videos aún</td></tr>';
-}
-
-function updateRequestBadge(){
-  const badge = document.getElementById('reqBadge');
-  if(allRequests.length > 0){ badge.textContent = allRequests.length; badge.style.display='inline'; }
-  else badge.style.display='none';
-}
-
-function populateNotifSelect(){
-  const sel = document.getElementById('notifTarget');
-  sel.innerHTML = '<option value="">📢 Broadcast — Todos los usuarios</option>' +
-    allUsers.map(u => `<option value="${u.id}">👤 @${esc(u.username)} — ${esc(u.full_name||'')}</option>`).join('');
-}
-
-/* ══ RENDER VIDEOS ═══════════════════════════════════════════════════════ */
-function renderVideos(list){
-  const body = document.getElementById('vidTableBody');
-  if(!list.length){ body.innerHTML='<tr class="empty-row"><td colspan="7">Sin videos</td></tr>'; return; }
-  body.innerHTML = list.map(v => {
-    const fid = parseDriveId(v.drive_url);
-    const thumb = v.thumb_url || (fid ? `https://drive.google.com/thumbnail?id=${fid}&sz=w200` : '');
-    return `<tr>
-      <td><div class="thumb-cell">${thumb?`<img src="${esc(thumb)}" loading="lazy">`:'&nbsp;'}</div></td>
+      <td><div class="thumb-cell">${(()=>{const fid=parseDriveId(v.drive_url);const th=v.thumb_url||(fid?`https://drive.google.com/thumbnail?id=${fid}&sz=w120`:'');return th?`<img src="${esc(th)}" loading="lazy">`:'';})()}</div></td>
       <td><strong>${esc(v.title)}</strong></td>
       <td>${v.category?`<span class="tag green">${esc(v.category)}</span>`:'—'}</td>
       <td>${v.genre?`<span class="tag blue">${esc(v.genre)}</span>`:'—'}</td>
       <td>${v.year||'—'}</td>
-      <td>${v.user_id ? `<span class="tag yellow">Profesor</span>` : `<span class="tag blue">Admin</span>`}</td>
+    </tr>`).join('')||'<tr class="empty-row"><td colspan="5">Sin videos aún</td></tr>';
+}
+
+function updateRequestBadge(){
+  const b=document.getElementById('reqBadge');
+  if(allRequests.length){b.textContent=allRequests.length;b.style.display='inline';}
+  else b.style.display='none';
+}
+
+function populateNotifSelect(){
+  allNotifUsers=allUsers;
+  document.getElementById('notifTarget').innerHTML=
+    '<option value="">📢 Todos los profesores (broadcast)</option>'+
+    allUsers.map(u=>`<option value="${u.id}">👤 @${esc(u.username)} — ${esc(u.full_name||'')}</option>`).join('');
+}
+
+/* ══ RENDER VIDEOS ═══════════════════════════════════════════════════════ */
+function renderVideos(list){
+  const body=document.getElementById('vidTableBody');
+  if(!list.length){body.innerHTML='<tr class="empty-row"><td colspan="7">Sin videos</td></tr>';return;}
+  body.innerHTML=list.map(v=>{
+    const fid=parseDriveId(v.drive_url);
+    const th=v.thumb_url||(fid?`https://drive.google.com/thumbnail?id=${fid}&sz=w120`:'');
+    return `<tr>
+      <td><div class="thumb-cell">${th?`<img src="${esc(th)}" loading="lazy">`:'&nbsp;'}</div></td>
+      <td><strong style="font-size:13px">${esc(v.title)}</strong></td>
+      <td>${v.category?`<span class="tag green">${esc(v.category)}</span>`:'—'}</td>
+      <td>${v.genre?`<span class="tag blue">${esc(v.genre)}</span>`:'—'}</td>
+      <td>${v.year||'—'}</td>
+      <td>${v.user_id?`<span class="tag yellow">Profesor</span>`:`<span class="tag blue">Admin</span>`}</td>
       <td><div class="actions">
         <button class="act-btn info" onclick='openVideoModal(${JSON.stringify(v)})'>Editar</button>
         <button class="act-btn danger" onclick="deleteVideo('${v.id}','${esc(v.title)}')">Eliminar</button>
@@ -541,27 +562,22 @@ function renderVideos(list){
     </tr>`;
   }).join('');
 }
-
 function filterVideos(){
-  const q = document.getElementById('vidSearch').value.toLowerCase();
-  renderVideos(q ? allVideos.filter(v =>
-    (v.title||'').toLowerCase().includes(q) ||
-    (v.category||'').toLowerCase().includes(q) ||
-    (v.genre||'').toLowerCase().includes(q)
-  ) : allVideos);
+  const q=document.getElementById('vidSearch').value.toLowerCase();
+  renderVideos(q?allVideos.filter(v=>(v.title||'').toLowerCase().includes(q)||(v.category||'').toLowerCase().includes(q)||(v.genre||'').toLowerCase().includes(q)):allVideos);
 }
 
 /* ══ RENDER SOLICITUDES ══════════════════════════════════════════════════ */
 function renderRequests(list){
-  const body = document.getElementById('reqTableBody');
-  if(!list.length){ body.innerHTML='<tr class="empty-row"><td colspan="7">No hay solicitudes pendientes ✓</td></tr>'; return; }
-  body.innerHTML = list.map(u => `<tr>
+  const body=document.getElementById('reqTableBody');
+  if(!list.length){body.innerHTML='<tr class="empty-row"><td colspan="7">No hay solicitudes pendientes ✓</td></tr>';return;}
+  body.innerHTML=list.map(u=>`<tr>
     <td><strong>${esc(u.full_name||'—')}</strong></td>
-    <td>@${esc(u.username)}</td>
+    <td style="color:var(--accent)">@${esc(u.username)}</td>
     <td>${esc(u.subject_area||'—')}</td>
-    <td>${u.email ? esc(u.email) : '<span style="color:var(--muted)">No provisto</span>'}</td>
-    <td><span class="tag ${u.device_fingerprint?'yellow':''}"> ${u.device_fingerprint?'Verificado':'Sin datos'}</span></td>
-    <td style="color:var(--muted);font-size:12px;">${new Date(u.created_at).toLocaleDateString('es')}</td>
+    <td style="font-size:12px">${u.email?esc(u.email):'<span style="color:var(--muted)">No provisto</span>'}</td>
+    <td><span class="tag ${u.device_fingerprint?'green':'yellow'}">${u.device_fingerprint?'Verificado':'Sin datos'}</span></td>
+    <td style="color:var(--muted);font-size:12px">${new Date(u.created_at).toLocaleDateString('es')}</td>
     <td><div class="actions">
       <button class="act-btn success" onclick="validateUser('${u.id}',true)">✓ Aprobar</button>
       <button class="act-btn danger" onclick="validateUser('${u.id}',false)">✗ Rechazar</button>
@@ -569,217 +585,204 @@ function renderRequests(list){
   </tr>`).join('');
 }
 
-/* ══ RENDER USUARIOS ═════════════════════════════════════════════════════ */
+/* ══ RENDER PROFESORES ═══════════════════════════════════════════════════ */
 function renderUsers(list){
-  const body = document.getElementById('userTableBody');
-  if(!list.length){ body.innerHTML='<tr class="empty-row"><td colspan="6">No hay profesores registrados</td></tr>'; return; }
-  body.innerHTML = list.map(u => `<tr>
+  const body=document.getElementById('userTableBody');
+  if(!list.length){body.innerHTML='<tr class="empty-row"><td colspan="6">No hay profesores registrados</td></tr>';return;}
+  body.innerHTML=list.map(u=>`<tr>
     <td><strong>${esc(u.full_name||u.username)}</strong></td>
-    <td>@${esc(u.username)}</td>
+    <td style="color:var(--accent)">@${esc(u.username)}</td>
     <td>${esc(u.subject_area||'—')}</td>
-    <td>${u.email?esc(u.email):'—'}</td>
+    <td style="font-size:12px">${u.email?esc(u.email):'—'}</td>
     <td>${u.video_count||0}</td>
-    <td><div class="actions">
-      <button class="act-btn danger" onclick="deleteUser('${u.id}','${esc(u.username)}')">Eliminar</button>
-    </div></td>
+    <td><button class="act-btn danger" onclick="deleteUser('${u.id}','${esc(u.full_name||u.username)}')">Eliminar</button></td>
   </tr>`).join('');
 }
-
 function filterUsers(){
-  const q = document.getElementById('userSearch').value.toLowerCase();
-  renderUsers(q ? allUsers.filter(u =>
-    (u.full_name||'').toLowerCase().includes(q) ||
-    (u.username||'').toLowerCase().includes(q) ||
-    (u.subject_area||'').toLowerCase().includes(q)
-  ) : allUsers);
+  const q=document.getElementById('userSearch').value.toLowerCase();
+  renderUsers(q?allUsers.filter(u=>(u.full_name||'').toLowerCase().includes(q)||(u.username||'').toLowerCase().includes(q)||(u.subject_area||'').toLowerCase().includes(q)):allUsers);
+}
+
+/* ══ RENDER ADMINS ═══════════════════════════════════════════════════════ */
+function renderAdmins(list){
+  const body=document.getElementById('adminTableBody');
+  if(!list.length){body.innerHTML='<tr class="empty-row"><td colspan="3">Sin administradores adicionales</td></tr>';return;}
+  body.innerHTML=list.map(a=>`<tr>
+    <td><strong>@${esc(a.username)}</strong></td>
+    <td style="color:var(--muted);font-size:12px">${a.created_at?new Date(a.created_at).toLocaleDateString('es'):'—'}</td>
+    <td>${a.username!==SESSION.username
+      ?`<button class="act-btn danger" onclick="deleteAdmin('${a.id}','${esc(a.username)}')">Eliminar</button>`
+      :`<span style="font-size:11px;color:var(--muted)">Tu cuenta</span>`
+    }</td>
+  </tr>`).join('');
 }
 
 /* ══ RENDER NOTIFICACIONES ═══════════════════════════════════════════════ */
 function renderNotifHistory(list){
-  const body = document.getElementById('notifHistory');
-  if(!list.length){ body.innerHTML='<tr class="empty-row"><td colspan="5">Sin notificaciones en el historial</td></tr>'; return; }
-  body.innerHTML = list.map(n => `<tr>
-    <td style="max-width:300px">${esc(n.message)}</td>
-    <td>${n.user_id ? `<span class="tag yellow">Usuario</span>` : `<span class="tag blue">Todos</span>`}</td>
-    <td><span class="tag ${n.type==='admin'?'red':'green'}">${n.type}</span></td>
+  const body=document.getElementById('notifHistory');
+  if(!list.length){body.innerHTML='<tr class="empty-row"><td colspan="4">Sin historial de notificaciones</td></tr>';return;}
+  body.innerHTML=list.map(n=>`<tr>
+    <td style="max-width:280px;font-size:13px">${esc(n.message)}</td>
+    <td>${n.user_id?`<span class="tag yellow">Usuario</span>`:`<span class="tag blue">Todos</span>`}</td>
     <td style="color:var(--muted);font-size:12px">${new Date(n.created_at).toLocaleDateString('es')}</td>
     <td><button class="act-btn danger" onclick="deleteNotif('${n.id}')">×</button></td>
   </tr>`).join('');
 }
 
-/* ══ RENDER ADMINS ═══════════════════════════════════════════════════════ */
-function renderAdmins(list){
-  const body = document.getElementById('adminTableBody');
-  if(!list.length){ body.innerHTML='<tr class="empty-row"><td colspan="3">Sin admins adicionales</td></tr>'; return; }
-  body.innerHTML = list.map(a => `<tr>
-    <td><strong>@${esc(a.username)}</strong></td>
-    <td style="color:var(--muted);font-size:12px">${new Date(a.created_at||'').toLocaleDateString('es')}</td>
-    <td>${a.username!==SESSION.username?`<button class="act-btn danger" onclick="deleteAdmin('${a.id}','${esc(a.username)}')">Eliminar</button>`:'<span style="color:var(--muted);font-size:11px">Tu cuenta</span>'}</td>
-  </tr>`).join('');
+/* ══ ACCIONES ════════════════════════════════════════════════════════════ */
+async function validateUser(id,approve){
+  const body=approve?{validated:true}:{validated:false,rejected:true};
+  const r=await fetch(`/api/users?id=${id}`,{method:'PUT',headers:authH(),body:JSON.stringify(body)});
+  if(!r.ok){showToast('Error',true);return;}
+  showToast(approve?'Profesor aprobado ✓':'Solicitud rechazada');
+  await loadRequests();await loadUsers();updateDashboard();populateNotifSelect();
 }
 
-/* ══ ACCIONES: USUARIOS ══════════════════════════════════════════════════ */
-async function validateUser(id, approve){
-  const body = approve ? { validated: true } : { validated: false, rejected: true };
-  const r = await fetch(`/api/users?id=${id}`, { method:'PUT', headers:authH(), body:JSON.stringify(body) });
-  if(!r.ok){ showToast('Error', true); return; }
-  showToast(approve ? 'Usuario aprobado ✓' : 'Solicitud rechazada');
-  await loadRequests();
-  await loadUsers();
-  updateDashboard();
+async function deleteUser(id,name){
+  if(!confirm(`¿Eliminar al profesor "${name}"? Sus videos quedarán sin dueño.`)) return;
+  const r=await fetch(`/api/users?id=${id}`,{method:'DELETE',headers:authH()});
+  if(!r.ok){showToast('Error al eliminar',true);return;}
+  showToast('Profesor eliminado');await loadUsers();updateDashboard();populateNotifSelect();
 }
 
-async function deleteUser(id, username){
-  if(!confirm(`¿Eliminar al profesor @${username}? Sus videos quedarán sin dueño.`)) return;
-  const r = await fetch(`/api/users?id=${id}`, { method:'DELETE', headers:authH() });
-  if(!r.ok){ showToast('Error al eliminar', true); return; }
-  showToast('Profesor eliminado');
-  await loadUsers();
-  updateDashboard();
-}
-
-/* ══ ACCIONES: VIDEOS ════════════════════════════════════════════════════ */
-async function deleteVideo(id, title){
+async function deleteVideo(id,title){
   if(!confirm(`¿Eliminar "${title}"?`)) return;
-  const r = await fetch(`/api/videos?id=${id}`, { method:'DELETE', headers:authH() });
-  if(!r.ok){ showToast('Error al eliminar', true); return; }
-  showToast('Video eliminado');
-  await loadVideos();
-  updateDashboard();
+  const r=await fetch(`/api/videos?id=${id}`,{method:'DELETE',headers:authH()});
+  if(!r.ok){showToast('Error al eliminar',true);return;}
+  showToast('Video eliminado');await loadVideos();updateDashboard();
+}
+
+async function deleteAdmin(id,username){
+  if(!confirm(`¿Eliminar al administrador @${username}?\nEsta acción no se puede deshacer.`)) return;
+  const r=await fetch(`/api/users?action=delete-admin&id=${id}`,{method:'DELETE',headers:authH()});
+  const d=await r.json();
+  if(!r.ok){showToast(d.error||'Error al eliminar',true);return;}
+  showToast(`Administrador @${username} eliminado`);await loadAdmins();
 }
 
 /* ══ MODAL VIDEO ═════════════════════════════════════════════════════════ */
-function openVideoModal(v=null){
-  document.getElementById('vmId').value = v ? v.id : '';
-  document.getElementById('vmTitle').value = v ? v.title : '';
-  document.getElementById('vmDrive').value = v ? v.drive_url : '';
-  document.getElementById('vmCat').value = v ? (v.category||'') : '';
-  document.getElementById('vmGenre').value = v ? (v.genre||'') : '';
-  document.getElementById('vmYear').value = v ? (v.year||'') : '';
-  document.getElementById('vmDesc').value = v ? (v.description||'') : '';
-  document.getElementById('vmThumb').value = v ? (v.thumb_url||'') : '';
-  document.getElementById('vmMsg').className='msg';
-  selectedFile = null;
-  // Preview
-  const prev = document.getElementById('imgPreview');
-  if(v && v.thumb_url){ prev.innerHTML=`<img src="${esc(v.thumb_url)}">`; }
-  else { prev.innerHTML='<span>Clic para seleccionar imagen (JPG, PNG, WEBP…)</span>'; }
-  document.getElementById('videoModal').title = v ? 'Editar video' : 'Agregar video';
-  document.getElementById('vmTitle').textContent = v ? 'Editar video' : 'Agregar video';
-  document.querySelector('#videoModal .modal-header h2').textContent = v ? 'Editar video' : 'Agregar video';
-  document.getElementById('videoModal').classList.add('open');
-}
-
-function closeVideoModal(){ document.getElementById('videoModal').classList.remove('open'); }
-
 function previewImage(input){
-  const file = input.files[0];
-  if(!file) return;
-  selectedFile = file;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('imgPreview').innerHTML = `<img src="${e.target.result}">`;
-    document.getElementById('vmThumb').value = '';
-  };
+  const file=input.files[0];if(!file)return;
+  selectedFile=file;
+  const reader=new FileReader();
+  reader.onload=e=>{document.getElementById('vmImgPreview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;};
   reader.readAsDataURL(file);
 }
 
-function syncThumbFromUrl(){
-  const url = document.getElementById('vmThumb').value.trim();
-  if(url){ document.getElementById('imgPreview').innerHTML=`<img src="${esc(url)}">`; selectedFile=null; }
+function openVideoModal(v=null){
+  document.getElementById('vmId').value=v?v.id:'';
+  document.getElementById('vmTitle').value=v?v.title:'';
+  document.getElementById('vmDrive').value=v?v.drive_url:'';
+  document.getElementById('vmCat').value=v?(v.category||''):'';
+  document.getElementById('vmGenre').value=v?(v.genre||''):'';
+  document.getElementById('vmYear').value=v?(v.year||''):'';
+  document.getElementById('vmDesc').value=v?(v.description||''):'';
+  document.getElementById('vmMsg').className='msg';
+  document.getElementById('vmModalTitle').textContent=v?'Editar video':'Agregar video';
+  selectedFile=null;
+  document.getElementById('fileInput').value='';
+  const prev=document.getElementById('vmImgPreview');
+  if(v&&v.thumb_url){
+    prev.innerHTML=`<img src="${esc(v.thumb_url)}" style="width:100%;height:100%;object-fit:cover">`;
+  }else{
+    prev.innerHTML=`<svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:var(--muted);fill:none;opacity:.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span style="font-size:11px;color:var(--muted)">Clic para seleccionar imagen (JPG, PNG, WEBP…)</span>`;
+  }
+  document.getElementById('videoModal').classList.add('open');
 }
 
 async function saveVideo(){
-  const id = document.getElementById('vmId').value;
-  const msg = document.getElementById('vmMsg');
-  const btn = document.getElementById('vmSaveBtn');
+  const id=document.getElementById('vmId').value;
+  const msg=document.getElementById('vmMsg');
+  const btn=document.getElementById('vmSaveBtn');
   msg.className='msg';
-  const title = document.getElementById('vmTitle').value.trim();
-  const drive_url = document.getElementById('vmDrive').value.trim();
-  if(!title || !drive_url){ msg.textContent='Título y URL son obligatorios'; msg.className='msg error'; return; }
+  const title=document.getElementById('vmTitle').value.trim();
+  const drive_url=document.getElementById('vmDrive').value.trim();
+  if(!title||!drive_url){msg.textContent='Título y URL son obligatorios';msg.className='msg error';return;}
+  btn.disabled=true;btn.textContent='Guardando…';
 
-  btn.disabled=true; btn.textContent='Guardando…';
+  // Obtener thumb_url actual si había (para edición sin cambiar imagen)
+  let thumb_url=null;
+  const imgEl=document.getElementById('vmImgPreview').querySelector('img');
+  if(imgEl&&!selectedFile) thumb_url=imgEl.src;
 
-  let thumb_url = document.getElementById('vmThumb').value.trim() || null;
-
-  // Si hay archivo seleccionado, subirlo primero
   if(selectedFile){
     try{
-      const reader = new FileReader();
-      const base64 = await new Promise(res => { reader.onload=e=>res(e.target.result); reader.readAsDataURL(selectedFile); });
-      const up = await fetch('/api/upload', { method:'POST', headers:authH(), body:JSON.stringify({ base64, filename: selectedFile.name }) });
-      const ud = await up.json();
-      if(!up.ok) throw new Error(ud.error);
-      thumb_url = ud.url;
-    }catch(e){ msg.textContent='Error al subir imagen: '+e.message; msg.className='msg error'; btn.disabled=false; btn.textContent='Guardar'; return; }
+      const reader=new FileReader();
+      const base64=await new Promise(res=>{reader.onload=e=>res(e.target.result);reader.readAsDataURL(selectedFile);});
+      const up=await fetch('/api/upload',{method:'POST',headers:authH(),body:JSON.stringify({base64,filename:selectedFile.name})});
+      const ud=await up.json();
+      if(!up.ok) throw new Error(ud.error||'Error al subir imagen');
+      thumb_url=ud.url;
+    }catch(e){
+      msg.textContent=e.message;msg.className='msg error';
+      btn.disabled=false;btn.textContent='Guardar';return;
+    }
   }
 
-  const body = {
-    title, drive_url,
-    category: document.getElementById('vmCat').value.trim() || null,
-    genre: document.getElementById('vmGenre').value.trim() || null,
-    year: document.getElementById('vmYear').value || null,
-    description: document.getElementById('vmDesc').value.trim() || null,
-    thumb_url
+  const body={
+    title,drive_url,
+    category:document.getElementById('vmCat').value.trim()||null,
+    genre:document.getElementById('vmGenre').value.trim()||null,
+    year:document.getElementById('vmYear').value||null,
+    description:document.getElementById('vmDesc').value.trim()||null,
+    thumb_url:thumb_url||null
   };
 
   try{
-    const url = id ? `/api/videos?id=${id}` : '/api/videos';
-    const r = await fetch(url, { method: id?'PUT':'POST', headers:authH(), body:JSON.stringify(body) });
-    const d = await r.json();
-    if(!r.ok){ msg.textContent=d.error||'Error'; msg.className='msg error'; return; }
-    closeVideoModal();
-    showToast(id ? 'Video actualizado ✓' : 'Video agregado ✓');
-    await loadVideos();
-    updateDashboard();
-  }catch{ msg.textContent='Error de conexión'; msg.className='msg error'; }
-  finally{ btn.disabled=false; btn.textContent='Guardar'; }
+    const url=id?`/api/videos?id=${id}`:'/api/videos';
+    const r=await fetch(url,{method:id?'PUT':'POST',headers:authH(),body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!r.ok){msg.textContent=d.error||'Error al guardar';msg.className='msg error';return;}
+    closeModal('videoModal');
+    showToast(id?'Video actualizado ✓':'Video agregado ✓');
+    await loadVideos();updateDashboard();
+  }catch(e){msg.textContent='Error de conexión';msg.className='msg error';}
+  finally{btn.disabled=false;btn.textContent='Guardar';}
+}
+
+/* ══ MODAL ADMIN ═════════════════════════════════════════════════════════ */
+function openAddAdminModal(){
+  document.getElementById('aaUser').value='';
+  document.getElementById('aaPass').value='';
+  document.getElementById('aaMsg').className='msg';
+  document.getElementById('addAdminModal').classList.add('open');
+}
+
+async function saveAdmin(){
+  const username=document.getElementById('aaUser').value.trim();
+  const password=document.getElementById('aaPass').value;
+  const msg=document.getElementById('aaMsg');
+  const btn=document.getElementById('aaSaveBtn');
+  if(!username||!password){msg.textContent='Completá los campos';msg.className='msg error';return;}
+  btn.disabled=true;btn.textContent='Creando…';
+  try{
+    const r=await fetch('/api/users?action=add-admin',{method:'POST',headers:authH(),body:JSON.stringify({username,password})});
+    const d=await r.json();
+    if(!r.ok){msg.textContent=d.error||'Error';msg.className='msg error';return;}
+    closeModal('addAdminModal');
+    showToast(`Administrador @${username} creado ✓`);
+    await loadAdmins();
+  }catch(e){msg.textContent='Error de conexión';msg.className='msg error';}
+  finally{btn.disabled=false;btn.textContent='Crear administrador';}
 }
 
 /* ══ NOTIFICACIONES ══════════════════════════════════════════════════════ */
 async function sendNotif(){
-  const msg = document.getElementById('notifMsg').value.trim();
-  const user_id = document.getElementById('notifTarget').value || null;
-  const statusEl = document.getElementById('notifSendMsg');
-  if(!msg){ statusEl.textContent='Escribí un mensaje'; statusEl.style.color='var(--accent2)'; return; }
-  const r = await fetch('/api/notifications', { method:'POST', headers:authH(), body:JSON.stringify({ message:msg, user_id }) });
-  if(!r.ok){ statusEl.textContent='Error al enviar'; statusEl.style.color='var(--accent2)'; return; }
-  statusEl.textContent='Enviado ✓'; statusEl.style.color='var(--accent)';
+  const msg=document.getElementById('notifMsg').value.trim();
+  const user_id=document.getElementById('notifTarget').value||null;
+  const fb=document.getElementById('notifSendFeedback');
+  if(!msg){fb.textContent='Escribí un mensaje primero';fb.style.color='var(--accent2)';return;}
+  const r=await fetch('/api/notifications',{method:'POST',headers:authH(),body:JSON.stringify({message:msg,user_id})});
+  if(!r.ok){fb.textContent='Error al enviar';fb.style.color='var(--accent2)';return;}
+  fb.textContent='Enviado ✓';fb.style.color='var(--accent)';
   document.getElementById('notifMsg').value='';
-  setTimeout(()=>{ statusEl.textContent=''; },3000);
+  setTimeout(()=>{fb.textContent='';},3000);
   await loadNotifHistory();
 }
 
 async function deleteNotif(id){
-  await fetch(`/api/notifications?id=${id}`, { method:'DELETE', headers:authH() });
+  await fetch(`/api/notifications?id=${id}`,{method:'DELETE',headers:authH()});
   await loadNotifHistory();
-}
-
-/* ══ SUPER ADMINS ════════════════════════════════════════════════════════ */
-function openAddAdminModal(){ document.getElementById('addAdminModal').classList.add('open'); document.getElementById('aaMsg').className='msg'; }
-
-async function saveAdmin(){
-  const username = document.getElementById('aaUser').value.trim();
-  const password = document.getElementById('aaPass').value;
-  const msg = document.getElementById('aaMsg');
-  const btn = document.getElementById('aaSaveBtn');
-  if(!username||!password){ msg.textContent='Completá los campos'; msg.className='msg error'; return; }
-  btn.disabled=true; btn.textContent='Guardando…';
-  try{
-    const r = await fetch('/api/users?action=add-admin', { method:'POST', headers:authH(), body:JSON.stringify({username,password}) });
-    const d = await r.json();
-    if(!r.ok){ msg.textContent=d.error||'Error'; msg.className='msg error'; return; }
-    document.getElementById('addAdminModal').classList.remove('open');
-    showToast('Super admin creado ✓');
-    await loadAdmins();
-  }catch{ msg.textContent='Error de conexión'; msg.className='msg error'; }
-  finally{ btn.disabled=false; btn.textContent='Crear super admin'; }
-}
-
-async function deleteAdmin(id, username){
-  if(!confirm(`¿Eliminar al super admin @${username}?`)) return;
-  // Nota: la tabla admins no tiene endpoint DELETE en /api/users aún — se puede agregar
-  showToast('Funcionalidad en desarrollo', true);
 }
 </script>
 </body>
