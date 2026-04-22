@@ -370,10 +370,31 @@ footer span{color:var(--accent);}
       </div>
       <!-- Register -->
       <div id="formRegister" style="display:none">
-        <div class="form-group"><label>USUARIO</label><input type="text" id="regUser" placeholder="Nombre de usuario único"/></div>
-        <div class="form-group"><label>EMAIL</label><input type="email" id="regEmail" placeholder="tu@email.com"/></div>
-        <div class="form-group"><label>CONTRASEÑA</label><input type="password" id="regPass" placeholder="Mínimo 6 caracteres"/></div>
-        <button class="btn-full" id="btnDoRegister" onclick="doRegister()">Crear cuenta</button>
+        <div class="form-group">
+          <label>NOMBRE COMPLETO *</label>
+          <input type="text" id="regName" placeholder="Tu nombre y apellido"/>
+        </div>
+        <div class="form-group">
+          <label>ÁREA / MATERIA</label>
+          <input type="text" id="regArea" placeholder="Ej: Matemáticas, Ciencias…"/>
+        </div>
+        <div class="form-group">
+          <label>USUARIO *</label>
+          <input type="text" id="regUser" placeholder="Nombre de usuario único"/>
+        </div>
+        <div class="form-group">
+          <label>EMAIL <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+          <input type="email" id="regEmail" placeholder="tu@email.com"/>
+        </div>
+        <div class="form-group">
+          <label>CONTRASEÑA *</label>
+          <input type="password" id="regPass" placeholder="Mínimo 6 caracteres"/>
+        </div>
+        <button class="btn-full" id="btnDoRegister" onclick="doRegister()">Enviar solicitud</button>
+        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6;">
+          Tu solicitud quedará pendiente hasta que el administrador la apruebe.<br/>
+          Solo podrás iniciar sesión una vez aprobada.
+        </p>
         <div class="auth-msg" id="registerMsg"></div>
       </div>
     </div>
@@ -389,12 +410,22 @@ footer span{color:var(--accent);}
     </div>
     <div class="video-modal-body">
       <input type="hidden" id="editVideoId"/>
-      <div class="form-group"><label>TÍTULO *</label><input type="text" id="vTitle" placeholder="Nombre de la película"/></div>
-      <div class="form-group"><label>URL DE GOOGLE DRIVE *</label><input type="text" id="vDrive" placeholder="https://drive.google.com/file/d/..."/></div>
-      <div class="form-group"><label>CATEGORÍA / GÉNERO</label><input type="text" id="vCat" placeholder="Acción, Terror, Comedia…"/></div>
+      <div class="form-group"><label>TÍTULO *</label><input type="text" id="vTitle" placeholder="Nombre de la película o video"/></div>
+      <div class="form-group"><label>URL DE GOOGLE DRIVE *</label><input type="text" id="vDrive" placeholder="https://drive.google.com/file/d/…"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group"><label>CATEGORÍA (tipo)</label><input type="text" id="vCat" placeholder="Película, Serie, Doc…"/></div>
+        <div class="form-group"><label>GÉNERO</label><input type="text" id="vGenre" placeholder="Acción, Terror…"/></div>
+      </div>
       <div class="form-group"><label>AÑO</label><input type="number" id="vYear" placeholder="2024" min="1900" max="2099"/></div>
-      <div class="form-group"><label>DESCRIPCIÓN</label><input type="text" id="vDesc" placeholder="Sinopsis breve…"/></div>
-      <div class="form-group"><label>URL MINIATURA (opcional)</label><input type="text" id="vThumb" placeholder="https://…"/></div>
+      <div class="form-group"><label>DESCRIPCIÓN / SINOPSIS</label><input type="text" id="vDesc" placeholder="Breve descripción…"/></div>
+      <div class="form-group">
+        <label>IMAGEN DE PORTADA</label>
+        <div id="vImgPreview" onclick="document.getElementById('vFileInput').click()" style="width:100%;aspect-ratio:16/9;background:var(--surface);border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;margin-bottom:8px;transition:border-color .2s;">
+          <span style="font-size:12px;color:var(--muted)">Clic para subir imagen (JPG, PNG, WEBP…)</span>
+        </div>
+        <input type="file" id="vFileInput" accept="image/*" style="display:none" onchange="vPreviewImage(this)"/>
+        <input type="text" id="vThumb" placeholder="O pegá URL directa de imagen…" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-family:var(--font-body);font-size:13px;color:var(--text);outline:none;" oninput="vSyncThumb()"/>
+      </div>
       <button class="btn-full" id="btnSaveVideo" onclick="saveVideo()">Guardar</button>
       <div class="auth-msg" id="videoMsg"></div>
     </div>
@@ -528,25 +559,46 @@ async function doLogin(){
   finally{btn.disabled=false;btn.textContent='Entrar';}
 }
 
+// Genera fingerprint del dispositivo (para control de multicuentas)
+function getDeviceFingerprint(){
+  const parts=[
+    navigator.userAgent,
+    navigator.language,
+    screen.width+'x'+screen.height,
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
+    String(navigator.hardwareConcurrency||0),
+    String(navigator.deviceMemory||0)
+  ];
+  const str=parts.join('|');
+  let hash=0;
+  for(let i=0;i<str.length;i++){hash=((hash<<5)-hash)+str.charCodeAt(i);hash=hash&hash;}
+  return Math.abs(hash).toString(16).padStart(8,'0');
+}
+
 async function doRegister(){
+  const full_name=document.getElementById('regName').value.trim();
+  const subject_area=document.getElementById('regArea').value.trim();
   const username=document.getElementById('regUser').value.trim();
   const email=document.getElementById('regEmail').value.trim();
   const password=document.getElementById('regPass').value;
   const msg=document.getElementById('registerMsg');
   const btn=document.getElementById('btnDoRegister');
-  if(!username||!email||!password){msg.textContent='Completá todos los campos.';msg.className='auth-msg error';return;}
+  if(!full_name||!username||!password){msg.textContent='Nombre completo, usuario y contraseña son obligatorios.';msg.className='auth-msg error';return;}
   btn.disabled=true;btn.textContent='Enviando…';
+  const device_fingerprint=getDeviceFingerprint();
   try{
-    const r=await fetch('/api/auth?action=register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});
+    const body={full_name,subject_area:subject_area||null,username,password,device_fingerprint};
+    if(email) body.email=email;
+    const r=await fetch('/api/auth?action=register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const d=await r.json();
     if(!r.ok){msg.textContent=d.error||'Error al registrarse';msg.className='auth-msg error';return;}
-    msg.textContent=d.message||'Registro enviado. El administrador debe aprobarlo.';
+    msg.textContent=d.message||'Solicitud enviada. Esperá la aprobación del administrador.';
     msg.className='auth-msg success';
-    document.getElementById('regUser').value='';
-    document.getElementById('regEmail').value='';
-    document.getElementById('regPass').value='';
+    ['regName','regArea','regUser','regEmail','regPass'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.value='';
+    });
   }catch(e){msg.textContent='Error de conexión';msg.className='auth-msg error';}
-  finally{btn.disabled=false;btn.textContent='Crear cuenta';}
+  finally{btn.disabled=false;btn.textContent='Enviar solicitud';}
 }
 
 // Cerrar modales al hacer click afuera
@@ -611,17 +663,42 @@ document.addEventListener('click',e=>{
 });
 
 /* ══ VIDEO MODAL (subir / editar) ════════════════════════════════════════════ */
+let vSelectedFile = null;
+
+function vPreviewImage(input){
+  const file = input.files[0]; if(!file) return;
+  vSelectedFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('vImgPreview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+    document.getElementById('vThumb').value='';
+  };
+  reader.readAsDataURL(file);
+}
+
+function vSyncThumb(){
+  const url = document.getElementById('vThumb').value.trim();
+  if(url){ document.getElementById('vImgPreview').innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover">`; vSelectedFile=null; }
+}
+
 function openVideoModal(videoData=null){
-  const title=document.getElementById('videoModalTitle');
   document.getElementById('editVideoId').value = videoData ? videoData.id : '';
   document.getElementById('vTitle').value = videoData ? videoData.title : '';
   document.getElementById('vDrive').value = videoData ? videoData.drive_url : '';
   document.getElementById('vCat').value = videoData ? (videoData.category||'') : '';
+  document.getElementById('vGenre').value = videoData ? (videoData.genre||'') : '';
   document.getElementById('vYear').value = videoData ? (videoData.year||'') : '';
   document.getElementById('vDesc').value = videoData ? (videoData.description||'') : '';
   document.getElementById('vThumb').value = videoData ? (videoData.thumb_url||'') : '';
   document.getElementById('videoMsg').className='auth-msg';
-  title.textContent = videoData ? 'Editar video' : 'Subir video';
+  vSelectedFile = null;
+  const prev = document.getElementById('vImgPreview');
+  if(videoData && videoData.thumb_url){
+    prev.innerHTML=`<img src="${esc(videoData.thumb_url)}" style="width:100%;height:100%;object-fit:cover">`;
+  } else {
+    prev.innerHTML='<span style="font-size:12px;color:var(--muted)">Clic para subir imagen (JPG, PNG, WEBP…)</span>';
+  }
+  document.querySelector('#videoModal .video-modal-header h2').textContent = videoData ? 'Editar video' : 'Subir video';
   document.getElementById('videoModal').classList.add('open');
 }
 
@@ -629,22 +706,40 @@ function closeVideoModal(){ document.getElementById('videoModal').classList.remo
 
 async function saveVideo(){
   const id = document.getElementById('editVideoId').value;
-  const body = {
-    title: document.getElementById('vTitle').value.trim(),
-    drive_url: document.getElementById('vDrive').value.trim(),
-    category: document.getElementById('vCat').value.trim(),
-    year: document.getElementById('vYear').value||null,
-    description: document.getElementById('vDesc').value.trim(),
-    thumb_url: document.getElementById('vThumb').value.trim()||null,
-  };
   const msg=document.getElementById('videoMsg');
   const btn=document.getElementById('btnSaveVideo');
-  if(!body.title||!body.drive_url){msg.textContent='Título y URL son obligatorios';msg.className='auth-msg error';return;}
-  btn.disabled=true;btn.textContent='Guardando…';
+  msg.className='auth-msg';
+  const title=document.getElementById('vTitle').value.trim();
+  const drive_url=document.getElementById('vDrive').value.trim();
+  if(!title||!drive_url){msg.textContent='Título y URL son obligatorios';msg.className='auth-msg error';return;}
+  btn.disabled=true; btn.textContent='Guardando…';
+
+  let thumb_url = document.getElementById('vThumb').value.trim() || null;
+
+  // Subir imagen si se seleccionó archivo
+  if(vSelectedFile){
+    try{
+      const reader=new FileReader();
+      const base64=await new Promise(res=>{reader.onload=e=>res(e.target.result);reader.readAsDataURL(vSelectedFile);});
+      const up=await fetch('/api/upload',{method:'POST',headers:authHeaders(),body:JSON.stringify({base64,filename:vSelectedFile.name})});
+      const ud=await up.json();
+      if(!up.ok) throw new Error(ud.error||'Error al subir imagen');
+      thumb_url=ud.url;
+    }catch(e){msg.textContent=e.message;msg.className='auth-msg error';btn.disabled=false;btn.textContent='Guardar';return;}
+  }
+
+  const body={
+    title, drive_url,
+    category: document.getElementById('vCat').value.trim()||null,
+    genre: document.getElementById('vGenre').value.trim()||null,
+    year: document.getElementById('vYear').value||null,
+    description: document.getElementById('vDesc').value.trim()||null,
+    thumb_url
+  };
+
   try{
-    const url = id ? `/api/videos?id=${id}` : '/api/videos';
-    const method = id ? 'PUT' : 'POST';
-    const r=await fetch(url,{method,headers:authHeaders(),body:JSON.stringify(body)});
+    const url=id?`/api/videos?id=${id}`:'/api/videos';
+    const r=await fetch(url,{method:id?'PUT':'POST',headers:authHeaders(),body:JSON.stringify(body)});
     const d=await r.json();
     if(!r.ok){msg.textContent=d.error||'Error al guardar';msg.className='auth-msg error';return;}
     closeVideoModal();
