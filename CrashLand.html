@@ -835,7 +835,7 @@ function updateSectionHeader(query, cat){
   const title = document.getElementById('sectionTitle');
   const count = document.getElementById('videoCount');
   if(query){
-    title.innerHTML = `Resultados para <span>"${esc(query)}"</span> <span class="ai-pill">IA</span>`;
+    title.innerHTML = `Resultados para <span>"${esc(query)}"</span> <span class="ai-pill"> </span>`;
   } else if(cat){
     title.innerHTML = `Categoría: <span>${esc(cat)}</span>`;
   } else {
