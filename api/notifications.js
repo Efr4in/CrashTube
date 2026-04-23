@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
   const caller = verifyToken(req);
   if (!caller) return res.status(401).json({ error: 'No autenticado' });
 
-  // GET — obtener notificaciones del usuario / admin
+  // GET — notificaciones del usuario o admin
   if (req.method === 'GET') {
     let query;
     if (caller.role === 'admin') {
@@ -44,7 +44,6 @@ module.exports = async (req, res) => {
     if (caller.role !== 'admin') return res.status(403).json({ error: 'Sin permisos' });
     const { message, user_id } = req.body;
     if (!message) return res.status(400).json({ error: 'Falta el mensaje' });
-
     const type = user_id ? 'user' : 'broadcast';
     const { data, error } = await supabase.from('notifications')
       .insert([{ user_id: user_id || null, message, type, read: false }])
@@ -72,11 +71,30 @@ module.exports = async (req, res) => {
     return res.status(200).json(data);
   }
 
-  // DELETE — eliminar (solo admin)
+  // DELETE — eliminar notificación
+  // Admin puede borrar cualquiera.
+  // Docente puede borrar solo las que le pertenecen (user_id = su id) o broadcasts (user_id null).
   if (req.method === 'DELETE') {
-    if (caller.role !== 'admin') return res.status(403).json({ error: 'Sin permisos' });
     const { id } = req.query;
     if (!id) return res.status(400).json({ error: 'Falta el id' });
+
+    if (caller.role === 'admin') {
+      // Admin borra cualquier notificación sin restricción
+      const { error } = await supabase.from('notifications').delete().eq('id', id);
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ success: true });
+    }
+
+    // Docente: verificar que la notificación le pertenece antes de borrar
+    const { data: notif, error: fetchErr } = await supabase
+      .from('notifications').select('id, user_id, type').eq('id', id).single();
+
+    if (fetchErr || !notif) return res.status(404).json({ error: 'Notificación no encontrada' });
+
+    // Puede borrar si es suya directamente, o si es un broadcast global
+    const canDelete = String(notif.user_id) === String(caller.id) || notif.user_id === null;
+    if (!canDelete) return res.status(403).json({ error: 'No podés eliminar esta notificación' });
+
     const { error } = await supabase.from('notifications').delete().eq('id', id);
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json({ success: true });

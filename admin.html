@@ -11,7 +11,7 @@
   --accent:#00c4a7;--accent2:#ff5e57;--warn:#f59e0b;
   --text:#e8edf3;--muted:#6b7a8d;
   --font-head:'Exo 2',sans-serif;--font-body:'Outfit',sans-serif;
-  --sidebar-w:240px;--topbar-h:56px;
+  --sidebar-w:220px;--topbar-h:56px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;}
@@ -89,9 +89,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 }
 .sidebar-section{font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);padding:12px 10px 5px;}
 .nav-item{
-  display:flex;align-items:center;gap:9px;padding:9px 12px;
+  display:flex;align-items:center;gap:9px;padding:9px 14px;
   border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);
   transition:all .18s;border:1px solid transparent;user-select:none;
+  white-space:nowrap; /* evita que el texto se corte */
 }
 .nav-item:hover{background:rgba(0,196,167,.06);color:var(--text);}
 .nav-item.active{background:rgba(0,196,167,.1);border-color:rgba(0,196,167,.2);color:var(--accent);}
@@ -208,6 +209,9 @@ tr:hover td{background:rgba(0,196,167,.02);}
   /* Sidebar se convierte en drawer */
   .sidebar{
     position:fixed;top:0;left:0;bottom:0;z-index:160;
+    width:auto;           /* se ajusta al contenido */
+    min-width:200px;      /* mínimo decente */
+    max-width:80vw;       /* nunca ocupa más del 80% de pantalla */
     height:100%;transform:translateX(-100%);
     box-shadow:4px 0 20px rgba(0,0,0,.4);
   }

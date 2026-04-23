@@ -156,26 +156,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);display:
     width:340px;
   }
 }
-.notif-panel-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);}
-.notif-panel-header h3{font-family:var(--font-head);font-size:14px;font-weight:700;}
-.notif-panel-actions{display:flex;align-items:center;gap:8px;}
-.notif-mark-all{background:transparent;border:none;font-size:11px;color:var(--accent);cursor:pointer;font-family:var(--font-body);padding:0;white-space:nowrap;}
-.notif-delete-all{background:transparent;border:none;font-size:11px;color:var(--accent2);cursor:pointer;font-family:var(--font-body);padding:0;white-space:nowrap;opacity:.7;}
-.notif-delete-all:hover{opacity:1;}
-.notif-list{max-height:360px;overflow-y:auto;}
-.notif-item{padding:11px 14px;border-bottom:1px solid rgba(30,45,64,0.5);transition:background .15s;display:flex;gap:10px;align-items:flex-start;}
-.notif-item:hover{background:rgba(0,196,167,0.03);}
+.notif-mark-all{background:transparent;border:none;font-size:11px;color:var(--accent);cursor:pointer;font-family:var(--font-body);}
+.notif-list{max-height:340px;overflow-y:auto;}
+.notif-item{padding:12px 16px;border-bottom:1px solid rgba(30,45,64,0.5);cursor:pointer;transition:background .15s;display:flex;gap:10px;align-items:flex-start;}
+.notif-item:hover{background:rgba(0,196,167,0.04);}
 .notif-item.unread{background:rgba(0,196,167,0.04);border-left:3px solid var(--accent);}
-.notif-item-body{flex:1;min-width:0;cursor:pointer;}
-.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px;}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px;}
 .notif-dot.read{background:transparent;border:1px solid var(--border);}
-.notif-item p{font-size:12px;line-height:1.5;color:var(--text);word-break:break-word;}
+.notif-item p{font-size:12px;line-height:1.5;color:var(--text);}
 .notif-item small{font-size:10px;color:var(--muted);}
-.notif-del-btn{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:4px;flex-shrink:0;opacity:0;transition:opacity .15s,color .15s;display:flex;align-items:center;}
-.notif-item:hover .notif-del-btn{opacity:1;}
-.notif-del-btn:hover{color:var(--accent2);}
-.notif-del-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;display:block;}
-.notif-empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:13px;}
+.notif-empty{padding:32px 16px;text-align:center;color:var(--muted);font-size:13px;}
 
 /* ══ MODAL AUTH ═════════════════════════════════════════════════════════════ */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
@@ -307,10 +297,7 @@ footer span{color:var(--accent);}
       <div class="notif-panel" id="notifPanel">
         <div class="notif-panel-header">
           <h3>Notificaciones</h3>
-          <div class="notif-panel-actions">
-            <button class="notif-mark-all" onclick="markAllRead()">Leídas ✓</button>
-            <button class="notif-delete-all" onclick="deleteAllNotifs()">Borrar todo</button>
-          </div>
+          <button class="notif-mark-all" onclick="markAllRead()">Marcar todas como leídas</button>
         </div>
         <div class="notif-list" id="notifList"><div class="notif-empty">Sin notificaciones</div></div>
       </div>
@@ -321,10 +308,7 @@ footer span{color:var(--accent);}
       <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
     </button>
 
-    <!-- PS4 -->
-    <a href="/ps4" class="nav-icon-btn" title="Modo PS4">
-      <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/></svg>
-    </a>
+    <!-- PS4: solo redirige automáticamente, sin botón visible -->
 
     <!-- Avatar / Login -->
     <div id="navAuthArea">
@@ -684,15 +668,9 @@ function renderNotifications(){
   const list=document.getElementById('notifList');
   if(!notifData.length){list.innerHTML='<div class="notif-empty">Sin notificaciones nuevas</div>';return;}
   list.innerHTML=notifData.map(n=>`
-    <div class="notif-item ${n.read?'':'unread'}" id="ni-${n.id}">
-      <div class="notif-dot ${n.read?'read':''}" style="cursor:pointer" onclick="markRead('${n.id}',document.getElementById('ni-${n.id}'))"></div>
-      <div class="notif-item-body" onclick="markRead('${n.id}',document.getElementById('ni-${n.id}'))">
-        <p>${esc(n.message)}</p>
-        <small>${new Date(n.created_at).toLocaleDateString('es')}</small>
-      </div>
-      <button class="notif-del-btn" title="Eliminar" onclick="deleteSingleNotif('${n.id}')">
-        <svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+    <div class="notif-item ${n.read?'':'unread'}" onclick="markRead('${n.id}',this)">
+      <div class="notif-dot ${n.read?'read':''}"></div>
+      <div><p>${esc(n.message)}</p><small>${new Date(n.created_at).toLocaleDateString('es')}</small></div>
     </div>`).join('');
 }
 
@@ -708,30 +686,6 @@ async function markAllRead(){
   await fetch('/api/notifications?all=true',{method:'PUT',headers:authHeaders()});
   document.querySelectorAll('.notif-item').forEach(el=>{el.classList.remove('unread');if(el.querySelector('.notif-dot'))el.querySelector('.notif-dot').className='notif-dot read';});
   document.getElementById('notifBadge').classList.remove('show');
-}
-
-async function deleteSingleNotif(id){
-  try{
-    await fetch(`/api/notifications?id=${id}`,{method:'DELETE',headers:authHeaders()});
-    const el=document.getElementById('ni-'+id);
-    if(el) el.remove();
-    notifData=notifData.filter(n=>n.id!==id);
-    if(!notifData.length) document.getElementById('notifList').innerHTML='<div class="notif-empty">Sin notificaciones nuevas</div>';
-    const unread=document.querySelectorAll('.notif-item.unread').length;
-    const badge=document.getElementById('notifBadge');
-    if(unread>0){badge.textContent=unread;badge.classList.add('show');}else{badge.classList.remove('show');}
-  }catch{}
-}
-
-async function deleteAllNotifs(){
-  if(!notifData.length) return;
-  if(!confirm('¿Eliminar todas las notificaciones?')) return;
-  try{
-    await Promise.all(notifData.map(n=>fetch(`/api/notifications?id=${n.id}`,{method:'DELETE',headers:authHeaders()})));
-    notifData=[];
-    document.getElementById('notifList').innerHTML='<div class="notif-empty">Sin notificaciones</div>';
-    document.getElementById('notifBadge').classList.remove('show');
-  }catch{}
 }
 
 // Cerrar panel al click afuera
