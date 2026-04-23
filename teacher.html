@@ -62,6 +62,10 @@ nav{
 .notif-content{flex:1;min-width:0;}
 .notif-msg{font-size:13px;line-height:1.5;word-break:break-word;}
 .notif-time{font-size:10px;color:var(--muted);margin-top:2px;}
+.notif-del-btn{background:transparent;border:none;cursor:pointer;color:var(--muted);padding:3px;border-radius:4px;flex-shrink:0;opacity:0.4;transition:opacity .15s,color .15s;display:flex;align-items:center;}
+.notif-item:hover .notif-del-btn{opacity:1;}
+.notif-del-btn:hover{color:var(--accent2);}
+.notif-del-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;display:block;}
 .notif-empty{text-align:center;padding:20px;color:var(--muted);font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px;}
 
 /* VIDEO SECTION */
@@ -180,7 +184,10 @@ nav{
   <div class="notif-section" id="notifSection" style="display:none">
     <div class="sec-header">
       <h2 class="sec-title">🔔 Notificaciones</h2>
-      <button class="nbtn" onclick="markAllRead()">Marcar leídas</button>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="nbtn" onclick="markAllRead()" style="font-size:11px;padding:5px 10px;">Leídas ✓</button>
+        <button class="nbtn" onclick="deleteAllNotifs()" style="font-size:11px;padding:5px 10px;border-color:rgba(255,94,87,.3);color:var(--accent2);">Borrar todo</button>
+      </div>
     </div>
     <div class="notif-list" id="notifList"></div>
   </div>
@@ -290,13 +297,19 @@ async function loadNotifications(){
     if(notifs.length){
       document.getElementById('notifSection').style.display='block';
       document.getElementById('notifList').innerHTML=notifs.map(n=>`
-        <div class="notif-item ${n.read?'':'unread'}">
+        <div class="notif-item ${n.read?'':'unread'}" id="tni-${n.id}">
           <div class="notif-dot ${n.read?'read':''}"></div>
           <div class="notif-content">
             <div class="notif-msg">${esc(n.message)}</div>
             <div class="notif-time">${new Date(n.created_at).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'})}</div>
           </div>
+          <button class="notif-del-btn" title="Eliminar" onclick="deleteSingleNotif('${n.id}')">
+            <svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>`).join('');
+    }else{
+      document.getElementById('notifSection').style.display='block';
+      document.getElementById('notifList').innerHTML='<div class="notif-empty">Sin notificaciones</div>';
     }
   }catch{}
 }
@@ -306,6 +319,31 @@ async function markAllRead(){
   document.querySelectorAll('.notif-item').forEach(el=>{el.classList.remove('unread');const d=el.querySelector('.notif-dot');if(d)d.className='notif-dot read';});
   document.getElementById('stNotifs').textContent='0';
   showToast('Notificaciones marcadas como leídas');
+}
+
+async function deleteSingleNotif(id){
+  try{
+    await fetch(`/api/notifications?id=${id}`,{method:'DELETE',headers:authH()});
+    const el=document.getElementById('tni-'+id);
+    if(el) el.remove();
+    if(!document.querySelectorAll('.notif-item').length){
+      document.getElementById('notifList').innerHTML='<div class="notif-empty">Sin notificaciones</div>';
+    }
+    const unread=document.querySelectorAll('.notif-item.unread').length;
+    document.getElementById('stNotifs').textContent=String(unread);
+  }catch{}
+}
+
+async function deleteAllNotifs(){
+  if(!confirm('¿Eliminar todas las notificaciones?')) return;
+  try{
+    const items=[...document.querySelectorAll('.notif-item')];
+    const ids=items.map(el=>el.id.replace('tni-',''));
+    await Promise.all(ids.map(id=>fetch(`/api/notifications?id=${id}`,{method:'DELETE',headers:authH()})));
+    document.getElementById('notifList').innerHTML='<div class="notif-empty">Sin notificaciones</div>';
+    document.getElementById('stNotifs').textContent='0';
+    showToast('Notificaciones eliminadas');
+  }catch{}
 }
 
 /* RENDER VIDEOS */
