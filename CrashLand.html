@@ -56,7 +56,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);display:
 .avatar-menu{position:absolute;top:calc(100% + 10px);right:0;background:var(--card);border:1px solid var(--border);border-radius:12px;min-width:200px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,0.5);display:none;z-index:300;}
 .avatar-menu.open{display:block;}
 .avatar-menu-header{padding:14px 16px;border-bottom:1px solid var(--border);}
-.avatar-menu-header .am-name{font-family:var(--font-head);font-weight:700;font-size:14px;color:var(--text);}
+.avatar-menu-header .am-name{font-family:var(--font-head);font-weight:700;font-size:14px;}
 .avatar-menu-header .am-role{font-size:11px;color:var(--accent);font-weight:500;}
 .avatar-menu a,.avatar-menu button{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;text-decoration:none;cursor:pointer;font-family:var(--font-body);transition:background .15s,color .15s;}
 .avatar-menu a:hover,.avatar-menu button:hover{background:rgba(0,196,167,0.06);color:var(--text);}
@@ -156,12 +156,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);display:
     width:340px;
   }
 }
-.notif-panel-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);gap:10px;}
-.notif-panel-header h3{font-family:var(--font-head);font-size:14px;font-weight:700;white-space:nowrap;}
-.notif-panel-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.notif-mark-all{background:transparent;border:none;font-size:11px;color:var(--accent);cursor:pointer;font-family:var(--font-body);padding:0;white-space:nowrap;}
-.notif-delete-all{background:transparent;border:none;font-size:11px;color:var(--accent2);cursor:pointer;font-family:var(--font-body);padding:0;white-space:nowrap;opacity:.75;}
-.notif-delete-all:hover{opacity:1;}
+.notif-mark-all{background:transparent;border:none;font-size:11px;color:var(--accent);cursor:pointer;font-family:var(--font-body);}
 .notif-list{max-height:340px;overflow-y:auto;}
 .notif-item{padding:12px 16px;border-bottom:1px solid rgba(30,45,64,0.5);cursor:pointer;transition:background .15s;display:flex;gap:10px;align-items:flex-start;}
 .notif-item:hover{background:rgba(0,196,167,0.04);}
@@ -302,10 +297,7 @@ footer span{color:var(--accent);}
       <div class="notif-panel" id="notifPanel">
         <div class="notif-panel-header">
           <h3>Notificaciones</h3>
-          <div class="notif-panel-actions">
-            <button class="notif-mark-all" onclick="markAllRead()">Leídas ✓</button>
-            <button class="notif-delete-all" onclick="deleteAllNotifs()">Borrar todo</button>
-          </div>
+          <button class="notif-mark-all" onclick="markAllRead()">Marcar todas como leídas</button>
         </div>
         <div class="notif-list" id="notifList"><div class="notif-empty">Sin notificaciones</div></div>
       </div>
@@ -316,11 +308,7 @@ footer span{color:var(--accent);}
       <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
     </button>
 
-    <!-- PS4 
-    <a href="/ps4" class="nav-icon-btn" title="Modo PS4">
-      <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/></svg>
-    </a>
-    -->
+    <!-- PS4: redirige automáticamente si detecta una PS4, sin botón visible -->
 
     <!-- Avatar / Login -->
     <div id="navAuthArea">
@@ -391,7 +379,7 @@ footer span{color:var(--accent);}
 </div>
 
 <div class="toast" id="toast"></div>
-<footer>Hecho por 🐼<span>Efra</span>🐼 — <span>CrashTube</span><br/>🔐 Tu videoteca personal 🔐</footer>
+<footer>Hecho con ♥ — <span>CrashTube</span> · Tu videoteca personal</footer>
 
 <!-- ══ MODAL AUTH ══════════════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="authModal">
@@ -835,7 +823,7 @@ function updateSectionHeader(query, cat){
   const title = document.getElementById('sectionTitle');
   const count = document.getElementById('videoCount');
   if(query){
-    title.innerHTML = `Resultados para <span>"${esc(query)}"</span> <span class="ai-pill"> </span>`;
+    title.innerHTML = `Resultados para <span>"${esc(query)}"</span>`;
   } else if(cat){
     title.innerHTML = `Categoría: <span>${esc(cat)}</span>`;
   } else {
@@ -888,7 +876,7 @@ function renderGrid(videos, filterCat='', searchResults=null){
       </div>
       <div class="card-body">
         <p class="card-title">${esc(v.title)}</p>
-        <div class="card-meta">${v.category?`<span class="tag-pill">${esc(v.category)}</span>`:''} ${v.genre?`<span class="tag-pill" style="background:rgba(96,165,250,0.08);color:#60a5fa;border-color:rgba(96,165,250,0.18)">${esc(v.genre)}</span>`:''} ${v.year?`<span>${esc(v.year)}</span>`:''}</div>
+        <div class="card-meta">${v.category?`<span class="tag-pill">${esc(v.category)}</span>`:''} ${v.year?`<span>${esc(v.year)}</span>`:''}</div>
       </div>
     </div>`;
   }).join('');
@@ -911,20 +899,18 @@ searchInput.addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(sear
 
 clearBtn.addEventListener('click',()=>{searchInput.value='';clearBtn.classList.remove('show');isSearching=false;activeChip='';document.querySelector('.chip[data-cat=""]').classList.add('active');document.querySelectorAll('.chip:not([data-cat=""])').forEach(c=>c.classList.remove('active'));renderGrid(allVideos,'');updateSectionHeader(null,'');searchInput.focus();});
 
-// Búsqueda local instantánea — sin API, filtra sobre allVideos en memoria
-function doSearch(q){
+async function doSearch(q){
   isSearching=true;
-  const term=q.trim().toLowerCase();
-  updateSectionHeader(q,null);
-  // Busca en título, categoría, género y descripción (case-insensitive)
-  const results=allVideos.filter(v=>
-    (v.title||'').toLowerCase().includes(term)||
-    (v.category||'').toLowerCase().includes(term)||
-    (v.genre||'').toLowerCase().includes(term)||
-    (v.description||'').toLowerCase().includes(term)
-  );
-  renderGrid(allVideos,'',results);
-  document.getElementById('videoCount').textContent=`${results.length} resultado${results.length!==1?'s':''}`;
+  document.getElementById('videoGrid').innerHTML='<div class="spinner-center"><div class="spinner"></div></div>';
+  updateSectionHeader(q, null);
+  try{
+    const r=await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    const d=await r.json();
+    renderGrid(allVideos, '', d.results||[]);
+    document.getElementById('videoCount').textContent=`${(d.results||[]).length} resultado${(d.results||[]).length!==1?'s':''}`;
+  }catch{
+    renderGrid(allVideos.filter(v=>v.title.toLowerCase().includes(q.toLowerCase())),'');
+  }
 }
 
 /* ══ VISIT TRACKING ══════════════════════════════════════════════════════════ */
@@ -942,6 +928,7 @@ async function trackVideoPlay(video_id){
 function showHome(){
   document.getElementById('home-view').style.display='block';
   document.getElementById('player-view').style.display='none';
+  document.getElementById('chipsBar').style.display='flex'; // mostrar chips al volver
   const v=document.getElementById('vid');v.pause();v.src='';
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -953,6 +940,7 @@ async function playVideo(idx){
   const fid=parseDriveId(v.drive_url);if(!fid){showToast('URL de Drive inválida.',true);return;}
   document.getElementById('home-view').style.display='none';
   document.getElementById('player-view').style.display='block';
+  document.getElementById('chipsBar').style.display='none'; // ocultar chips al reproducir
   setupPlayerMode();
   const loading=document.getElementById('player-loading');
   const vid=document.getElementById('vid');
