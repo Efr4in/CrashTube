@@ -16,16 +16,10 @@
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow:hidden;position:relative;}
 canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:none;}
 
-/* ── SCREENS ── */
-.screen{
-  position:fixed;inset:0;z-index:10;
-  display:flex;align-items:center;justify-content:center;
-  transition:transform .5s cubic-bezier(.4,0,.2,1), opacity .4s ease;
-}
+.screen{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .4s ease;}
 .screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none;}
 .screen.hidden-left{transform:translateX(-60%);opacity:0;pointer-events:none;}
 
-/* ── SELECTION SCREEN ── */
 #screen-select{flex-direction:column;gap:0;}
 .select-header{text-align:center;margin-bottom:44px;}
 .brand{display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:16px;}
@@ -34,50 +28,23 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
 .brand-name{font-family:var(--font-head);font-size:30px;font-weight:800;letter-spacing:-0.5px;}
 .select-sub{color:var(--muted);font-size:14px;margin-top:4px;}
 
-.cards-row{
-  display:flex;gap:20px;align-items:stretch;
-  padding:0 20px;
-  flex-wrap:wrap;justify-content:center;
-}
-.role-card{
-  background:rgba(13,17,23,0.82);
-  border:1px solid rgba(255,255,255,0.07);
-  border-radius:20px;
-  padding:36px 28px;
-  width:200px;
-  display:flex;flex-direction:column;align-items:center;gap:16px;
-  cursor:pointer;
-  transition:transform .25s, border-color .25s, box-shadow .25s;
-  backdrop-filter:blur(18px);
-  user-select:none;
-}
+.cards-row{display:flex;gap:20px;align-items:stretch;padding:0 20px;flex-wrap:wrap;justify-content:center;}
+.role-card{background:rgba(13,17,23,0.82);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:36px 28px;width:200px;display:flex;flex-direction:column;align-items:center;gap:16px;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s;backdrop-filter:blur(18px);user-select:none;}
 .role-card:hover{transform:translateY(-6px);}
 .role-card.student:hover{border-color:rgba(0,196,167,0.4);box-shadow:0 20px 48px rgba(0,196,167,0.12);}
 .role-card.teacher:hover{border-color:rgba(108,99,255,0.4);box-shadow:0 20px 48px rgba(108,99,255,0.12);}
 .role-card.admin:hover{border-color:rgba(255,94,87,0.35);box-shadow:0 20px 48px rgba(255,94,87,0.1);}
-
-.role-icon{
-  width:60px;height:60px;border-radius:16px;
-  display:flex;align-items:center;justify-content:center;
-}
+.role-icon{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;}
 .student .role-icon{background:rgba(0,196,167,0.12);}
 .teacher .role-icon{background:rgba(108,99,255,0.12);}
 .admin   .role-icon{background:rgba(255,94,87,0.10);}
-
 .role-icon svg{width:28px;height:28px;}
 .student .role-icon svg{fill:var(--accent);}
 .teacher .role-icon svg{fill:var(--accent3);}
 .admin   .role-icon svg{fill:var(--accent2);}
-
 .role-label{font-family:var(--font-head);font-size:15px;font-weight:700;text-align:center;line-height:1.3;}
 .role-desc{color:var(--muted);font-size:11px;text-align:center;line-height:1.5;}
-
-.role-arrow{
-  width:32px;height:32px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  margin-top:4px;
-  transition:transform .2s;
-}
+.role-arrow{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:4px;transition:transform .2s;}
 .student .role-arrow{background:rgba(0,196,167,0.1);}
 .teacher .role-arrow{background:rgba(108,99,255,0.1);}
 .admin   .role-arrow{background:rgba(255,94,87,0.08);}
@@ -87,65 +54,35 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
 .teacher .role-arrow svg{fill:var(--accent3);}
 .admin   .role-arrow svg{fill:var(--accent2);}
 
-/* ── LOGIN PANELS ── */
-.panel-wrap{width:100%;max-width:440px;padding:20px;}
-.panel-box{
-  background:rgba(13,17,23,0.9);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:22px;
-  padding:40px 38px;
-  backdrop-filter:blur(22px);
-  box-shadow:0 32px 80px rgba(0,0,0,0.6);
-}
-.panel-top{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
-.panel-icon{
-  width:42px;height:42px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
+.panel-wrap{width:100%;max-width:460px;padding:20px;}
+.panel-box{background:rgba(13,17,23,0.9);border:1px solid rgba(255,255,255,0.08);border-radius:22px;padding:36px 36px;backdrop-filter:blur(22px);box-shadow:0 32px 80px rgba(0,0,0,0.6);max-height:90vh;overflow-y:auto;}
+.panel-box::-webkit-scrollbar{width:3px;}
+.panel-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.panel-top{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+.panel-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .panel-icon svg{width:20px;height:20px;}
-.s-icon{background:rgba(0,196,167,0.12);}   .s-icon svg{fill:var(--accent);}
-.t-icon{background:rgba(108,99,255,0.12);}  .t-icon svg{fill:var(--accent3);}
-.a-icon{background:rgba(255,94,87,0.10);}   .a-icon svg{fill:var(--accent2);}
-
-.panel-titles{}
+.s-icon{background:rgba(0,196,167,0.12);}  .s-icon svg{fill:var(--accent);}
+.t-icon{background:rgba(108,99,255,0.12);} .t-icon svg{fill:var(--accent3);}
+.a-icon{background:rgba(255,94,87,0.10);}  .a-icon svg{fill:var(--accent2);}
 .panel-title{font-family:var(--font-head);font-size:19px;font-weight:700;}
 .panel-sub{color:var(--muted);font-size:12px;margin-top:2px;}
 
-/* Tabs (docente) */
-.tabs{display:flex;gap:0;margin-bottom:26px;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
-.tab-btn{
-  flex:1;padding:10px;font-family:var(--font-body);font-size:13px;font-weight:500;
-  background:transparent;border:none;color:var(--muted);cursor:pointer;
-  transition:background .2s, color .2s;
-}
+.tabs{display:flex;margin-bottom:22px;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.tab-btn{flex:1;padding:10px;font-family:var(--font-body);font-size:13px;font-weight:500;background:transparent;border:none;color:var(--muted);cursor:pointer;transition:background .2s,color .2s;}
 .tab-btn.active{background:var(--accent3);color:#fff;}
 
-/* Form */
-.form-group{margin-bottom:16px;}
-.form-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
-.form-input{
-  width:100%;background:rgba(7,9,15,0.7);border:1px solid var(--border);
-  border-radius:10px;padding:13px 15px;color:var(--text);
-  font-family:var(--font-body);font-size:14px;outline:none;
-  transition:border-color .2s, box-shadow .2s;
-  -moz-appearance:textfield;
-}
-.form-input::-webkit-outer-spin-button,
-.form-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.form-label .opt{font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;}
+.form-input{width:100%;background:rgba(7,9,15,0.7);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;appearance:textfield;-moz-appearance:textfield;}
+.form-input::-webkit-outer-spin-button,.form-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 .form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,196,167,0.1);}
-
 #screen-teacher .form-input:focus{border-color:var(--accent3);box-shadow:0 0 0 3px rgba(108,99,255,0.12);}
-#screen-admin .form-input:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(255,94,87,0.1);}
+#screen-admin   .form-input:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(255,94,87,0.1);}
+.code-hint{color:var(--muted);font-size:10px;margin-top:5px;}
+.form-note{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6;}
 
-/* Code inputs (student) */
-.code-hint{color:var(--muted);font-size:11px;margin-top:6px;}
-
-.btn-login{
-  width:100%;padding:13px;
-  font-family:var(--font-head);font-size:15px;font-weight:700;
-  border:none;border-radius:10px;cursor:pointer;
-  transition:all .2s;margin-top:6px;
-}
+.btn-login{width:100%;padding:13px;font-family:var(--font-head);font-size:15px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:all .2s;margin-top:6px;}
 .btn-login:disabled{opacity:0.6;transform:none;cursor:not-allowed;}
 .btn-s{background:var(--accent);color:#07090f;}
 .btn-s:hover:not(:disabled){background:#00dfc0;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,196,167,0.3);}
@@ -154,17 +91,11 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
 .btn-a{background:var(--accent2);color:#fff;}
 .btn-a:hover:not(:disabled){background:#ff7570;transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,94,87,0.3);}
 
-.error-msg{
-  background:rgba(255,94,87,0.08);border:1px solid rgba(255,94,87,0.3);
-  border-radius:8px;padding:11px;color:var(--accent2);
-  font-size:12px;margin-top:12px;text-align:center;display:none;
-}
-.back-btn{
-  display:flex;align-items:center;gap:6px;margin-top:20px;
-  background:none;border:none;color:var(--muted);
-  font-family:var(--font-body);font-size:13px;cursor:pointer;
-  transition:color .2s;padding:0;
-}
+.msg{border-radius:8px;padding:11px;font-size:12px;margin-top:12px;text-align:center;display:none;}
+.msg.err{background:rgba(255,94,87,0.08);border:1px solid rgba(255,94,87,0.3);color:var(--accent2);}
+.msg.ok{background:rgba(0,196,167,0.08);border:1px solid rgba(0,196,167,0.3);color:var(--accent);}
+
+.back-btn{display:flex;align-items:center;gap:6px;margin-top:18px;background:none;border:none;color:var(--muted);font-family:var(--font-body);font-size:13px;cursor:pointer;transition:color .2s;padding:0;}
 .back-btn:hover{color:var(--text);}
 .back-btn svg{width:14px;height:14px;fill:currentColor;}
 </style>
@@ -172,7 +103,7 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
 <body>
 <canvas id="bg"></canvas>
 
-<!-- ═══════════════════════════════════════════ PANTALLA SELECCIÓN -->
+<!-- SELECCIÓN -->
 <div class="screen" id="screen-select">
   <div class="select-header">
     <div class="brand">
@@ -181,33 +112,21 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
     </div>
     <p class="select-sub">Seleccioná tu tipo de acceso para continuar</p>
   </div>
-
   <div class="cards-row">
-    <!-- Estudiante -->
     <div class="role-card student" onclick="goTo('student')">
-      <div class="role-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
-      </div>
+      <div class="role-icon"><svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg></div>
       <span class="role-label">Inicio de Sesión Estudiantil</span>
       <span class="role-desc">Acceso con código de estudiante</span>
       <div class="role-arrow"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
     </div>
-
-    <!-- Docente -->
     <div class="role-card teacher" onclick="goTo('teacher')">
-      <div class="role-icon">
-        <svg viewBox="0 0 24 24"><path d="M20 17a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H9.46c.35.61.54 1.3.54 2h10v11h-9v2m-4 4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8v-3H5v3m3-10H5v2h6v-2H8zm-3 4h9v-2H5v2z"/></svg>
-      </div>
+      <div class="role-icon"><svg viewBox="0 0 24 24"><path d="M20 17a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H9.46c.35.61.54 1.3.54 2h10v11h-9v2m-4 4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8v-3H5v3m3-10H5v2h6v-2H8zm-3 4h9v-2H5v2z"/></svg></div>
       <span class="role-label">Inicio de Sesión Docentes</span>
       <span class="role-desc">Acceso y registro para docentes</span>
       <div class="role-arrow"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
     </div>
-
-    <!-- Administrativo -->
     <div class="role-card admin" onclick="goTo('admin')">
-      <div class="role-icon">
-        <svg viewBox="0 0 24 24"><path d="M17 11c.34 0 .67.03 1 .08V6.27L10.5 3 3 6.27v4.91c0 4.54 3.2 8.79 7.5 9.82.55-.13 1.08-.32 1.6-.55A6.995 6.995 0 0 0 17 23c3.87 0 7-3.13 7-7s-3.13-7-7-7zm0 12.5c-3.03 0-5.5-2.47-5.5-5.5s2.47-5.5 5.5-5.5 5.5 2.47 5.5 5.5-2.47 5.5-5.5 5.5zm.5-5.5l1.77 1.77-1.06 1.06-2.21-2.21V13h1.5v5z"/></svg>
-      </div>
+      <div class="role-icon"><svg viewBox="0 0 24 24"><path d="M17 11c.34 0 .67.03 1 .08V6.27L10.5 3 3 6.27v4.91c0 4.54 3.2 8.79 7.5 9.82.55-.13 1.08-.32 1.6-.55A6.995 6.995 0 0 0 17 23c3.87 0 7-3.13 7-7s-3.13-7-7-7zm0 12.5c-3.03 0-5.5-2.47-5.5-5.5s2.47-5.5 5.5-5.5 5.5 2.47 5.5 5.5-2.47 5.5-5.5 5.5zm.5-5.5l1.77 1.77-1.06 1.06-2.21-2.21V13h1.5v5z"/></svg></div>
       <span class="role-label">Inicio de Sesión Administrativo</span>
       <span class="role-desc">Solo personal autorizado</span>
       <div class="role-arrow"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></div>
@@ -215,20 +134,14 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ PANTALLA ESTUDIANTE -->
+<!-- ESTUDIANTE -->
 <div class="screen hidden" id="screen-student">
   <div class="panel-wrap">
     <div class="panel-box">
       <div class="panel-top">
-        <div class="panel-icon s-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
-        </div>
-        <div class="panel-titles">
-          <div class="panel-title">Acceso Estudiantil</div>
-          <div class="panel-sub">Ingresá tu código de 4 dígitos</div>
-        </div>
+        <div class="panel-icon s-icon"><svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg></div>
+        <div><div class="panel-title">Acceso Estudiantil</div><div class="panel-sub">Ingresá tu código de 4 dígitos</div></div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Usuario (Código)</label>
         <input class="form-input" id="s-user" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="0000" autocomplete="off"/>
@@ -239,7 +152,7 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
         <input class="form-input" id="s-pass" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="current-password"/>
       </div>
       <button class="btn-login btn-s" id="s-btn" onclick="doStudentLogin()">Ingresar</button>
-      <div class="error-msg" id="s-err"></div>
+      <div class="msg" id="s-msg"></div>
     </div>
     <button class="back-btn" onclick="goBack()">
       <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -248,20 +161,14 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ PANTALLA DOCENTE -->
+<!-- DOCENTE -->
 <div class="screen hidden" id="screen-teacher">
   <div class="panel-wrap">
     <div class="panel-box">
       <div class="panel-top">
-        <div class="panel-icon t-icon">
-          <svg viewBox="0 0 24 24"><path d="M20 17a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H9.46c.35.61.54 1.3.54 2h10v11h-9v2m-4 4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8v-3H5v3m3-10H5v2h6v-2H8zm-3 4h9v-2H5v2z"/></svg>
-        </div>
-        <div class="panel-titles">
-          <div class="panel-title">Acceso Docentes</div>
-          <div class="panel-sub">Inicio de sesión o registro</div>
-        </div>
+        <div class="panel-icon t-icon"><svg viewBox="0 0 24 24"><path d="M20 17a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H9.46c.35.61.54 1.3.54 2h10v11h-9v2m-4 4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8v-3H5v3m3-10H5v2h6v-2H8zm-3 4h9v-2H5v2z"/></svg></div>
+        <div><div class="panel-title">Acceso Docentes</div><div class="panel-sub">Inicio de sesión o registro</div></div>
       </div>
-
       <div class="tabs">
         <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Iniciar Sesión</button>
         <button class="tab-btn" id="tab-reg" onclick="switchTab('register')">Registrarse</button>
@@ -280,24 +187,33 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
         <button class="btn-login btn-t" id="t-btn" onclick="doTeacherLogin()">Iniciar Sesión</button>
       </div>
 
-      <!-- Registro docente -->
+      <!-- Registro docente — 5 campos completos igual al modal original -->
       <div id="t-reg-form" style="display:none;">
         <div class="form-group">
-          <label class="form-label">Nombre completo</label>
-          <input class="form-input" id="r-name" type="text" placeholder="Tu nombre" autocomplete="name"/>
+          <label class="form-label">Nombre Completo <span style="color:var(--accent3)">*</span></label>
+          <input class="form-input" id="r-name" type="text" placeholder="Tu nombre y apellido" autocomplete="name"/>
         </div>
         <div class="form-group">
-          <label class="form-label">Usuario</label>
-          <input class="form-input" id="r-user" type="text" placeholder="elige un usuario" autocomplete="username"/>
+          <label class="form-label">Área / Materia</label>
+          <input class="form-input" id="r-area" type="text" placeholder="Ej: Matemáticas, Ciencias..."/>
         </div>
         <div class="form-group">
-          <label class="form-label">Contraseña</label>
-          <input class="form-input" id="r-pass" type="password" placeholder="••••••••" autocomplete="new-password"/>
+          <label class="form-label">Usuario <span style="color:var(--accent3)">*</span></label>
+          <input class="form-input" id="r-user" type="text" placeholder="Nombre de usuario único" autocomplete="username"/>
         </div>
-        <button class="btn-login btn-t" id="r-btn" onclick="doTeacherRegister()">Crear Cuenta</button>
+        <div class="form-group">
+          <label class="form-label">Email <span class="opt">(opcional)</span></label>
+          <input class="form-input" id="r-email" type="email" placeholder="tu@email.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña <span style="color:var(--accent3)">*</span></label>
+          <input class="form-input" id="r-pass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+        </div>
+        <button class="btn-login btn-t" id="r-btn" onclick="doTeacherRegister()">Enviar solicitud</button>
+        <p class="form-note">Tu solicitud quedará pendiente hasta que el administrador la apruebe.<br/>Solo podrás iniciar sesión una vez aprobada.</p>
       </div>
 
-      <div class="error-msg" id="t-err"></div>
+      <div class="msg" id="t-msg"></div>
     </div>
     <button class="back-btn" onclick="goBack()">
       <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -306,20 +222,14 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ PANTALLA ADMIN -->
+<!-- ADMIN -->
 <div class="screen hidden" id="screen-admin">
   <div class="panel-wrap">
     <div class="panel-box">
       <div class="panel-top">
-        <div class="panel-icon a-icon">
-          <svg viewBox="0 0 24 24"><path d="M17 11c.34 0 .67.03 1 .08V6.27L10.5 3 3 6.27v4.91c0 4.54 3.2 8.79 7.5 9.82.55-.13 1.08-.32 1.6-.55A6.995 6.995 0 0 0 17 23c3.87 0 7-3.13 7-7s-3.13-7-7-7zm0 12.5c-3.03 0-5.5-2.47-5.5-5.5s2.47-5.5 5.5-5.5 5.5 2.47 5.5 5.5-2.47 5.5-5.5 5.5zm.5-5.5l1.77 1.77-1.06 1.06-2.21-2.21V13h1.5v5z"/></svg>
-        </div>
-        <div class="panel-titles">
-          <div class="panel-title">Acceso Administrativo</div>
-          <div class="panel-sub">Solo personal autorizado</div>
-        </div>
+        <div class="panel-icon a-icon"><svg viewBox="0 0 24 24"><path d="M17 11c.34 0 .67.03 1 .08V6.27L10.5 3 3 6.27v4.91c0 4.54 3.2 8.79 7.5 9.82.55-.13 1.08-.32 1.6-.55A6.995 6.995 0 0 0 17 23c3.87 0 7-3.13 7-7s-3.13-7-7-7zm0 12.5c-3.03 0-5.5-2.47-5.5-5.5s2.47-5.5 5.5-5.5 5.5 2.47 5.5 5.5-2.47 5.5-5.5 5.5zm.5-5.5l1.77 1.77-1.06 1.06-2.21-2.21V13h1.5v5z"/></svg></div>
+        <div><div class="panel-title">Acceso Administrativo</div><div class="panel-sub">Solo personal autorizado</div></div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Usuario</label>
         <input class="form-input" id="a-user" type="text" placeholder="tu usuario" autocomplete="username"/>
@@ -329,7 +239,7 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
         <input class="form-input" id="a-pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
       </div>
       <button class="btn-login btn-a" id="a-btn" onclick="doAdminLogin()">Iniciar Sesión</button>
-      <div class="error-msg" id="a-err"></div>
+      <div class="msg" id="a-msg"></div>
     </div>
     <button class="back-btn" onclick="goBack()">
       <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -339,266 +249,155 @@ canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;pointer-events:no
 </div>
 
 <script>
-// ── Canvas: Starfield + Aurora (idéntico al original) ──────────────────────────
+// ── Si ya hay sesión activa, redirigir directo ─────────────────────────────
+(function(){
+  try{
+    const s = JSON.parse(localStorage.getItem('ct_session')||'null');
+    if(!s||!s.token) return;
+    if(s.role==='admin')        window.location.replace('/admin');
+    else if(s.role==='teacher') window.location.replace('/teacher');
+    else                        window.location.replace('/home');
+  }catch{ localStorage.removeItem('ct_session'); }
+})();
+
+// ── Canvas starfield + aurora ──────────────────────────────────────────────
 (function(){
   const C=document.getElementById('bg'),ctx=C.getContext('2d');
   let W,H,mx=window.innerWidth/2,my=window.innerHeight/2,offX=0,offY=0;
-  const LAYERS=[
-    {count:180,sz:.8,sp:.018,op:.35,stars:[]},
-    {count:80,sz:1.5,sp:.04,op:.55,stars:[]},
-    {count:30,sz:2.5,sp:.07,op:.8,stars:[]}
-  ];
+  const LAYERS=[{count:180,sz:.8,sp:.018,op:.35,stars:[]},{count:80,sz:1.5,sp:.04,op:.55,stars:[]},{count:30,sz:2.5,sp:.07,op:.8,stars:[]}];
   let shoots=[];
-  function resize(){
-    W=C.width=window.innerWidth;H=C.height=window.innerHeight;
-    LAYERS.forEach(l=>{
-      l.stars=Array.from({length:l.count},()=>({
-        x:Math.random()*W,y:Math.random()*H,
-        r:l.sz*(.5+Math.random()),
-        tw:Math.random()*Math.PI*2,ts:.02+Math.random()*.03
-      }));
-    });
-  }
+  function resize(){W=C.width=window.innerWidth;H=C.height=window.innerHeight;LAYERS.forEach(l=>{l.stars=Array.from({length:l.count},()=>({x:Math.random()*W,y:Math.random()*H,r:l.sz*(.5+Math.random()),tw:Math.random()*Math.PI*2,ts:.02+Math.random()*.03}));});}
   let t=0;
   function draw(){
-    t++;ctx.clearRect(0,0,W,H);
-    offX+=((mx-W/2)*.04-offX)*.05;
-    offY+=((my-H/2)*.025-offY)*.05;
-    // Aurora
-    for(let i=0;i<3;i++){
-      const y=H*(.65+i*.12),
-            h2=180+i*30+Math.sin(t*.0003)*20,
-            g=ctx.createLinearGradient(0,y-80,0,y+60);
-      g.addColorStop(0,`hsla(${h2},70%,50%,0)`);
-      g.addColorStop(.5,`hsla(${h2},70%,50%,${.04-i*.01})`);
-      g.addColorStop(1,`hsla(${h2},70%,50%,0)`);
-      ctx.beginPath();ctx.moveTo(0,y);
-      for(let x=0;x<=W;x+=40) ctx.lineTo(x,y+Math.sin(x*.008+t*.0006+i)*28);
-      ctx.lineTo(W,y+80);ctx.lineTo(0,y+80);ctx.closePath();
-      ctx.fillStyle=g;ctx.fill();
-    }
-    // Shooting stars
-    if(Math.random()<.003) shoots.push({
-      x:Math.random()*W*.7,y:Math.random()*H*.4,
-      len:80+Math.random()*120,spd:8+Math.random()*6,
-      alpha:1,angle:Math.PI/4+(Math.random()-.5)*.3
-    });
+    t++;ctx.clearRect(0,0,W,H);offX+=((mx-W/2)*.04-offX)*.05;offY+=((my-H/2)*.025-offY)*.05;
+    for(let i=0;i<3;i++){const y=H*(.65+i*.12),h2=180+i*30+Math.sin(t*.0003)*20,g=ctx.createLinearGradient(0,y-80,0,y+60);g.addColorStop(0,`hsla(${h2},70%,50%,0)`);g.addColorStop(.5,`hsla(${h2},70%,50%,${.04-i*.01})`);g.addColorStop(1,`hsla(${h2},70%,50%,0)`);ctx.beginPath();ctx.moveTo(0,y);for(let x=0;x<=W;x+=40)ctx.lineTo(x,y+Math.sin(x*.008+t*.0006+i)*28);ctx.lineTo(W,y+80);ctx.lineTo(0,y+80);ctx.closePath();ctx.fillStyle=g;ctx.fill();}
+    if(Math.random()<.003)shoots.push({x:Math.random()*W*.7,y:Math.random()*H*.4,len:80+Math.random()*120,spd:8+Math.random()*6,alpha:1,angle:Math.PI/4+(Math.random()-.5)*.3});
     shoots=shoots.filter(s=>s.alpha>.05);
-    shoots.forEach(s=>{
-      ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.angle);
-      const g=ctx.createLinearGradient(0,0,s.len,0);
-      g.addColorStop(0,`rgba(200,230,255,${s.alpha})`);
-      g.addColorStop(1,'rgba(200,230,255,0)');
-      ctx.strokeStyle=g;ctx.lineWidth=1.5;
-      ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(s.len,0);ctx.stroke();
-      ctx.restore();
-      s.x+=Math.cos(s.angle)*s.spd;s.y+=Math.sin(s.angle)*s.spd;s.alpha*=.97;
-    });
-    // Stars
-    LAYERS.forEach(l=>l.stars.forEach(s=>{
-      s.tw+=s.ts;
-      const a=l.op*(.5+.5*Math.sin(s.tw));
-      const px=((s.x+offX*l.sp)%W+W)%W,py=((s.y+offY*l.sp)%H+H)%H;
-      ctx.beginPath();ctx.arc(px,py,s.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(220,235,255,${a})`;ctx.fill();
-      if(l.sz>2&&a>.6){
-        ctx.beginPath();ctx.arc(px,py,s.r*3,0,Math.PI*2);
-        ctx.fillStyle=`rgba(0,196,167,${a*.1})`;ctx.fill();
-      }
-    }));
+    shoots.forEach(s=>{ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.angle);const g=ctx.createLinearGradient(0,0,s.len,0);g.addColorStop(0,`rgba(200,230,255,${s.alpha})`);g.addColorStop(1,'rgba(200,230,255,0)');ctx.strokeStyle=g;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(s.len,0);ctx.stroke();ctx.restore();s.x+=Math.cos(s.angle)*s.spd;s.y+=Math.sin(s.angle)*s.spd;s.alpha*=.97;});
+    LAYERS.forEach(l=>l.stars.forEach(s=>{s.tw+=s.ts;const a=l.op*(.5+.5*Math.sin(s.tw));const px=((s.x+offX*l.sp)%W+W)%W,py=((s.y+offY*l.sp)%H+H)%H;ctx.beginPath();ctx.arc(px,py,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(220,235,255,${a})`;ctx.fill();if(l.sz>2&&a>.6){ctx.beginPath();ctx.arc(px,py,s.r*3,0,Math.PI*2);ctx.fillStyle=`rgba(0,196,167,${a*.1})`;ctx.fill();}}));
     requestAnimationFrame(draw);
   }
-  window.addEventListener('resize',resize);
-  window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-  resize();draw();
+  window.addEventListener('resize',resize);window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});resize();draw();
 })();
 
-// ── Navegación entre pantallas ─────────────────────────────────────────────────
+// ── Navegación ─────────────────────────────────────────────────────────────
 let currentScreen='select';
 
 function goTo(role){
-  const sel=document.getElementById('screen-select');
-  const target=document.getElementById('screen-'+role);
-  sel.classList.add('hidden-left');
-  target.classList.remove('hidden');
+  document.getElementById('screen-select').classList.add('hidden-left');
+  document.getElementById('screen-'+role).classList.remove('hidden');
   currentScreen=role;
-  // Focus primer input
-  setTimeout(()=>{
-    const first=target.querySelector('.form-input');
-    if(first) first.focus();
-  },300);
+  setTimeout(()=>{const f=document.querySelector('#screen-'+role+' .form-input');if(f)f.focus();},320);
 }
-
 function goBack(){
-  const sel=document.getElementById('screen-select');
-  const cur=document.getElementById('screen-'+currentScreen);
-  cur.classList.add('hidden');
-  sel.classList.remove('hidden-left');
-  clearErrors();
+  document.getElementById('screen-'+currentScreen).classList.add('hidden');
+  document.getElementById('screen-select').classList.remove('hidden-left');
+  document.querySelectorAll('.msg').forEach(e=>{e.style.display='none';e.textContent='';e.className='msg';});
   currentScreen='select';
 }
-
-function clearErrors(){
-  document.querySelectorAll('.error-msg').forEach(e=>{
-    e.style.display='none';e.textContent='';
-  });
-}
-
-function showError(id,msg){
-  const e=document.getElementById(id);
-  e.textContent=msg;e.style.display='block';
-}
-
-// ── Tabs docente ───────────────────────────────────────────────────────────────
 function switchTab(tab){
   const isLogin=tab==='login';
   document.getElementById('tab-login').classList.toggle('active',isLogin);
   document.getElementById('tab-reg').classList.toggle('active',!isLogin);
   document.getElementById('t-login-form').style.display=isLogin?'':'none';
   document.getElementById('t-reg-form').style.display=isLogin?'none':'';
-  document.getElementById('t-err').style.display='none';
-  // Focus
-  setTimeout(()=>{
-    const first=document.getElementById(isLogin?'t-user':'r-name');
-    if(first) first.focus();
-  },50);
+  document.getElementById('t-msg').style.display='none';
+  setTimeout(()=>{const f=document.getElementById(isLogin?'t-user':'r-name');if(f)f.focus();},50);
 }
 
-// ── Solo numérico en inputs de estudiante ──────────────────────────────────────
+function showMsg(id,text,type){const e=document.getElementById(id);e.textContent=text;e.className='msg '+type;e.style.display='block';}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
 ['s-user','s-pass'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',function(){
-    this.value=this.value.replace(/\D/g,'').slice(0,4);
-  });
-  document.getElementById(id).addEventListener('keydown',e=>{
-    if(e.key==='Enter') doStudentLogin();
-  });
+  document.getElementById(id).addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,4);});
+  document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')doStudentLogin();});
 });
+['t-user','t-pass'].forEach(id=>{document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')doTeacherLogin();});});
+['a-user','a-pass'].forEach(id=>{document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')doAdminLogin();});});
 
-// Enter en admin
-['a-user','a-pass'].forEach(id=>{
-  document.getElementById(id).addEventListener('keydown',e=>{
-    if(e.key==='Enter') doAdminLogin();
-  });
-});
+function getDeviceFingerprint(){
+  const parts=[navigator.userAgent,navigator.language,screen.width+'x'+screen.height,Intl.DateTimeFormat().resolvedOptions().timeZone,String(navigator.hardwareConcurrency||0),String(navigator.deviceMemory||0)];
+  const str=parts.join('|');let hash=0;
+  for(let i=0;i<str.length;i++){hash=((hash<<5)-hash)+str.charCodeAt(i);hash=hash&hash;}
+  return Math.abs(hash).toString(16).padStart(8,'0');
+}
+function saveSession(data){localStorage.setItem('ct_session',JSON.stringify(data));}
 
-// Enter en docente login
-['t-user','t-pass'].forEach(id=>{
-  document.getElementById(id).addEventListener('keydown',e=>{
-    if(e.key==='Enter') doTeacherLogin();
-  });
-});
-
-// ── LOGIN ESTUDIANTE ───────────────────────────────────────────────────────────
-// NOTA: Necesitás agregar manejo de type:'student' en /api/auth.js
-// y una tabla 'estudiantes' en Supabase con columnas: codigo (4 dígitos), nombre, etc.
-// El código de estudiante actúa como usuario Y contraseña (ambos campos iguales).
+// ── LOGIN ESTUDIANTE ───────────────────────────────────────────────────────
 async function doStudentLogin(){
   const usuario=document.getElementById('s-user').value.trim();
   const pass=document.getElementById('s-pass').value.trim();
   const btn=document.getElementById('s-btn');
-  document.getElementById('s-err').style.display='none';
-  if(!usuario||!pass){showError('s-err','Completá ambos campos.');return;}
-  if(!/^\d{4}$/.test(usuario)||!/^\d{4}$/.test(pass)){
-    showError('s-err','Ambos campos deben ser exactamente 4 dígitos.');return;
-  }
+  document.getElementById('s-msg').style.display='none';
+  if(!usuario||!pass){showMsg('s-msg','Completá ambos campos.','err');return;}
+  if(!/^\d{4}$/.test(usuario)||!/^\d{4}$/.test(pass)){showMsg('s-msg','Ambos campos deben ser exactamente 4 dígitos.','err');return;}
   btn.textContent='Verificando...';btn.disabled=true;
   try{
-    const res=await fetch('/api/auth',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:usuario,password:pass,type:'student'})
-    });
+    const res=await fetch('/api/auth?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:usuario,password:pass,type:'student'})});
     const data=await res.json();
-    if(!res.ok){showError('s-err',data.error||'Código incorrecto.');btn.textContent='Ingresar';btn.disabled=false;return;}
-    localStorage.setItem('ct_token',data.token);
-    localStorage.setItem('ct_user',data.username);
-    localStorage.setItem('ct_role','student');
-    window.location.href='/';
-  }catch(e){
-    showError('s-err','Error de conexión. Intentá de nuevo.');
-    btn.textContent='Ingresar';btn.disabled=false;
-  }
+    if(!res.ok){showMsg('s-msg',data.error||'Código incorrecto.','err');btn.textContent='Ingresar';btn.disabled=false;return;}
+    saveSession({...data,role:'student'});
+    window.location.replace('/home');
+  }catch{showMsg('s-msg','Error de conexión. Intentá de nuevo.','err');btn.textContent='Ingresar';btn.disabled=false;}
 }
 
-// ── LOGIN DOCENTE ──────────────────────────────────────────────────────────────
+// ── LOGIN DOCENTE ──────────────────────────────────────────────────────────
 async function doTeacherLogin(){
   const username=document.getElementById('t-user').value.trim();
   const password=document.getElementById('t-pass').value;
   const btn=document.getElementById('t-btn');
-  document.getElementById('t-err').style.display='none';
-  if(!username||!password){showError('t-err','Completá usuario y contraseña.');return;}
+  document.getElementById('t-msg').style.display='none';
+  if(!username||!password){showMsg('t-msg','Completá usuario y contraseña.','err');return;}
   btn.textContent='Verificando...';btn.disabled=true;
   try{
-    const res=await fetch('/api/auth',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username,password,type:'teacher'})
-    });
+    const res=await fetch('/api/auth?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
     const data=await res.json();
-    if(!res.ok){showError('t-err',data.error||'Error al iniciar sesión.');btn.textContent='Iniciar Sesión';btn.disabled=false;return;}
-    localStorage.setItem('ct_token',data.token);
-    localStorage.setItem('ct_user',data.username);
-    localStorage.setItem('ct_role','teacher');
-    window.location.href='/teacher.html';
-  }catch(e){
-    showError('t-err','Error de conexión. Intentá de nuevo.');
-    btn.textContent='Iniciar Sesión';btn.disabled=false;
-  }
+    if(!res.ok){showMsg('t-msg',data.error||'Error al iniciar sesión.','err');btn.textContent='Iniciar Sesión';btn.disabled=false;return;}
+    saveSession({...data});
+    window.location.replace('/teacher');
+  }catch{showMsg('t-msg','Error de conexión. Intentá de nuevo.','err');btn.textContent='Iniciar Sesión';btn.disabled=false;}
 }
 
-// ── REGISTRO DOCENTE ───────────────────────────────────────────────────────────
+// ── REGISTRO DOCENTE ───────────────────────────────────────────────────────
 async function doTeacherRegister(){
-  const name=document.getElementById('r-name').value.trim();
+  const full_name=document.getElementById('r-name').value.trim();
+  const subject_area=document.getElementById('r-area').value.trim();
   const username=document.getElementById('r-user').value.trim();
+  const email=document.getElementById('r-email').value.trim();
   const password=document.getElementById('r-pass').value;
   const btn=document.getElementById('r-btn');
-  document.getElementById('t-err').style.display='none';
-  if(!name||!username||!password){showError('t-err','Completá todos los campos.');return;}
-  if(password.length<6){showError('t-err','La contraseña debe tener al menos 6 caracteres.');return;}
-  btn.textContent='Creando cuenta...';btn.disabled=true;
+  document.getElementById('t-msg').style.display='none';
+  if(!full_name||!username||!password){showMsg('t-msg','Nombre completo, usuario y contraseña son obligatorios.','err');return;}
+  if(password.length<6){showMsg('t-msg','La contraseña debe tener al menos 6 caracteres.','err');return;}
+  btn.textContent='Enviando...';btn.disabled=true;
+  const device_fingerprint=getDeviceFingerprint();
   try{
-    const res=await fetch('/api/users',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name,username,password,role:'teacher'})
-    });
+    const body={full_name,subject_area:subject_area||null,username,password,device_fingerprint};
+    if(email)body.email=email;
+    const res=await fetch('/api/auth?action=register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const data=await res.json();
-    if(!res.ok){showError('t-err',data.error||'Error al registrar.');btn.textContent='Crear Cuenta';btn.disabled=false;return;}
-    // Registro exitoso — loguear directamente
-    localStorage.setItem('ct_token',data.token);
-    localStorage.setItem('ct_user',data.username);
-    localStorage.setItem('ct_role','teacher');
-    window.location.href='/teacher.html';
-  }catch(e){
-    showError('t-err','Error de conexión. Intentá de nuevo.');
-    btn.textContent='Crear Cuenta';btn.disabled=false;
-  }
+    if(!res.ok){showMsg('t-msg',data.error||'Error al registrarse.','err');btn.textContent='Enviar solicitud';btn.disabled=false;return;}
+    showMsg('t-msg',data.message||'Solicitud enviada. Esperá la aprobación del administrador.','ok');
+    ['r-name','r-area','r-user','r-email','r-pass'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    btn.textContent='Enviar solicitud';btn.disabled=false;
+  }catch{showMsg('t-msg','Error de conexión. Intentá de nuevo.','err');btn.textContent='Enviar solicitud';btn.disabled=false;}
 }
 
-// ── LOGIN ADMIN (idéntico al original) ────────────────────────────────────────
+// ── LOGIN ADMIN ────────────────────────────────────────────────────────────
 async function doAdminLogin(){
   const username=document.getElementById('a-user').value.trim();
   const password=document.getElementById('a-pass').value;
   const btn=document.getElementById('a-btn');
-  document.getElementById('a-err').style.display='none';
-  if(!username||!password){showError('a-err','Completá usuario y contraseña.');return;}
+  document.getElementById('a-msg').style.display='none';
+  if(!username||!password){showMsg('a-msg','Completá usuario y contraseña.','err');return;}
   btn.textContent='Verificando...';btn.disabled=true;
   try{
-    const res=await fetch('/api/auth',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username,password})
-    });
+    const res=await fetch('/api/auth?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
     const data=await res.json();
-    if(!res.ok){showError('a-err',data.error||'Error al iniciar sesión.');btn.textContent='Iniciar Sesión';btn.disabled=false;return;}
-    localStorage.setItem('ct_token',data.token);
-    localStorage.setItem('ct_user',data.username);
-    localStorage.setItem('ct_role','admin');
-    window.location.href='/admin';
-  }catch(e){
-    showError('a-err','Error de conexión. Intentá de nuevo.');
-    btn.textContent='Iniciar Sesión';btn.disabled=false;
-  }
+    if(!res.ok){showMsg('a-msg',data.error||'Error al iniciar sesión.','err');btn.textContent='Iniciar Sesión';btn.disabled=false;return;}
+    saveSession({...data});
+    window.location.replace('/admin');
+  }catch{showMsg('a-msg','Error de conexión. Intentá de nuevo.','err');btn.textContent='Iniciar Sesión';btn.disabled=false;}
 }
 </script>
 </body>

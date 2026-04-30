@@ -1,11 +1,11 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/login",    "destination": "/login.html" },
-    { "source": "/admin",    "destination": "/admin.html" },
-    { "source": "/ps4",      "destination": "/ps4.html" },
-    { "source": "/teacher", "destination": "/teacher.html" },
-    { "source": "/(.*)",     "destination": "/CrashLand.html" }
-    
+    { "source": "/api/(.*)",  "destination": "/api/$1" },
+    { "source": "/home",      "destination": "/CrashLand.html" },
+    { "source": "/login",     "destination": "/login.html" },
+    { "source": "/admin",     "destination": "/admin.html" },
+    { "source": "/ps4",       "destination": "/ps4.html" },
+    { "source": "/teacher",   "destination": "/teacher.html" },
+    { "source": "/(.*)",      "destination": "/login.html" }
   ]
 }
