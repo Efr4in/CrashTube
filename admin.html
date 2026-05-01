@@ -563,7 +563,7 @@ function updateDashboard(){
   }).join('')||'<tr class="empty-row"><td colspan="5">Sin videos aún</td></tr>';
 }
 function updateRequestBadge(){const b=document.getElementById('reqBadge');if(allRequests.length){b.textContent=allRequests.length;b.style.display='inline';}else b.style.display='none';}
-function populateNotifSelect(){document.getElementById('notifTarget').innerHTML='<option value="">📢 Todos los profesores (broadcast)</option>'+allUsers.map(u=>`<option value="${u.id}">👤 @${esc(u.username)} — ${esc(u.full_name||'')}</option>`).join('');}
+function populateNotifSelect(){document.getElementById('notifTarget').innerHTML='<option value="">📢 Todos (broadcast)</option>'+allUsers.map(u=>`<option value="${u.id}">👤 Prof. @${esc(u.username)} — ${esc(u.full_name||'')}</option>`).join('')+allStudents.map(s=>`<option value="${s.id}">🎓 Est. ${esc(s.code)}</option>`).join('');}
 
 /* RENDERS */
 function renderVideos(list){

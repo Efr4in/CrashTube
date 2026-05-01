@@ -387,7 +387,7 @@ function renderNavAuth(){
   if(!SESSION){ window.location.replace('/'); return; }
   const initial=SESSION.username.charAt(0).toUpperCase();
   const isAdmin=SESSION.role==='admin';
-  const isTeacher=SESSION.role==='teacher';
+  const isTeacher=SESSION.role==='teacher'||SESSION.role==='user';
   area.innerHTML=`
     <div class="nav-avatar" id="avatarBtn" onclick="toggleAvatarMenu()">
       ${initial}

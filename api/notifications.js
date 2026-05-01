@@ -22,13 +22,18 @@ module.exports = async (req, res) => {
   const caller = verifyToken(req);
   if (!caller) return res.status(401).json({ error: 'No autenticado' });
 
-  // GET — notificaciones del usuario o admin
+  // GET — notificaciones del usuario o historial completo para admin
   if (req.method === 'GET') {
     let query;
     if (caller.role === 'admin') {
-      query = supabase.from('notifications').select('*').eq('type', 'admin')
+      // FIX: el admin ve TODAS las notificaciones (enviadas + sistema),
+      // no solo las de type='admin'. Así el historial del panel muestra
+      // todo lo que el admin mandó (broadcast, user) y también las
+      // notificaciones automáticas del sistema (solicitudes de registro).
+      query = supabase.from('notifications').select('*')
         .order('created_at', { ascending: false }).limit(100);
     } else {
+      // Docente/estudiante: ve las dirigidas a él + los broadcasts
       query = supabase.from('notifications').select('*')
         .or(`user_id.eq.${caller.id},and(user_id.is.null,type.eq.broadcast)`)
         .order('created_at', { ascending: false }).limit(50);
@@ -56,7 +61,7 @@ module.exports = async (req, res) => {
   if (req.method === 'PUT') {
     if (req.query.all === 'true') {
       if (caller.role === 'admin') {
-        await supabase.from('notifications').update({ read: true }).eq('type', 'admin');
+        await supabase.from('notifications').update({ read: true });
       } else {
         await supabase.from('notifications').update({ read: true })
           .or(`user_id.eq.${caller.id},and(user_id.is.null,type.eq.broadcast)`);
@@ -72,29 +77,22 @@ module.exports = async (req, res) => {
   }
 
   // DELETE — eliminar notificación
-  // Admin puede borrar cualquiera.
-  // Docente puede borrar solo las que le pertenecen (user_id = su id) o broadcasts (user_id null).
   if (req.method === 'DELETE') {
     const { id } = req.query;
     if (!id) return res.status(400).json({ error: 'Falta el id' });
 
     if (caller.role === 'admin') {
-      // Admin borra cualquier notificación sin restricción
       const { error } = await supabase.from('notifications').delete().eq('id', id);
       if (error) return res.status(500).json({ error: error.message });
       return res.status(200).json({ success: true });
     }
 
-    // Docente: verificar que la notificación le pertenece antes de borrar
+    // Docente/estudiante: solo puede borrar las suyas o broadcasts
     const { data: notif, error: fetchErr } = await supabase
       .from('notifications').select('id, user_id, type').eq('id', id).single();
-
     if (fetchErr || !notif) return res.status(404).json({ error: 'Notificación no encontrada' });
-
-    // Puede borrar si es suya directamente, o si es un broadcast global
     const canDelete = String(notif.user_id) === String(caller.id) || notif.user_id === null;
     if (!canDelete) return res.status(403).json({ error: 'No podés eliminar esta notificación' });
-
     const { error } = await supabase.from('notifications').delete().eq('id', id);
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json({ success: true });
