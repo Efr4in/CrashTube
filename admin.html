@@ -191,16 +191,20 @@ tr:hover td{background:rgba(0,196,167,.02);}
 @media(max-width:768px){
   .topbar-menu-btn{display:flex;}
   .topbar-user{display:none;}
-  /* SIDEBAR DRAWER MÓVIL — ancho controlado, texto siempre visible */
+  /* SIDEBAR DRAWER MÓVIL — empieza debajo del topbar para no tapar el primer ítem */
   .sidebar{
-    position:fixed;top:0;left:0;bottom:0;z-index:160;
-    width:72vw;           /* 72% del viewport: visible pero no invasivo */
-    max-width:260px;      /* nunca más ancho que 260px en tablets */
-    min-width:200px;      /* nunca más angosto que 200px */
-    height:100%;
+    position:fixed;
+    top:var(--topbar-h);
+    left:0;
+    bottom:0;
+    z-index:160;
+    width:72vw;
+    max-width:260px;
+    min-width:200px;
+    height:calc(100% - var(--topbar-h));
     transform:translateX(-100%);
     box-shadow:6px 0 24px rgba(0,0,0,.5);
-    padding:12px 8px 16px; /* padding lateral reducido para más espacio al texto */
+    padding:12px 8px 16px;
   }
   .sidebar.open{transform:translateX(0);}
 
