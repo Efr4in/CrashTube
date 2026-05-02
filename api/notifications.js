@@ -25,25 +25,30 @@ module.exports = async (req, res) => {
   // ── GET ──────────────────────────────────────────────────────────────────
   if (req.method === 'GET') {
     let query;
+
     if (caller.role === 'admin') {
       if (req.query.view === 'history') {
-        // Panel admin: historial completo (todo lo enviado + sistema)
+        // Panel admin: historial COMPLETO — nunca filtra user_hidden,
+        // porque el historial es el registro permanente de todo lo enviado.
         query = supabase.from('notifications').select('*')
           .order('created_at', { ascending: false }).limit(200);
       } else {
-        // Bell del admin en CrashLand: solo alertas del sistema
-        // Los mensajes enviados a docentes/estudiantes NO aparecen aquí,
-        // así borrar desde el bell no afecta el historial del panel.
+        // Bell del admin en CrashLand: solo alertas del sistema (type=admin),
+        // excluyendo las que el admin marcó como ocultas desde el bell.
         query = supabase.from('notifications').select('*')
           .eq('type', 'admin')
+          .or('user_hidden.is.null,user_hidden.eq.false')
           .order('created_at', { ascending: false }).limit(100);
       }
     } else {
-      // Docente o estudiante: ve las dirigidas a él + broadcasts
+      // Docente o estudiante: sus notificaciones + broadcasts,
+      // excluyendo las que él mismo marcó como ocultas.
       query = supabase.from('notifications').select('*')
         .or(`user_id.eq.${caller.id},and(user_id.is.null,type.eq.broadcast)`)
+        .or('user_hidden.is.null,user_hidden.eq.false')
         .order('created_at', { ascending: false }).limit(50);
     }
+
     const { data, error } = await query;
     if (error) return res.status(500).json({ error: error.message });
     const unread = (data || []).filter(n => !n.read).length;
@@ -57,7 +62,7 @@ module.exports = async (req, res) => {
     if (!message) return res.status(400).json({ error: 'Falta el mensaje' });
     const type = user_id ? 'user' : 'broadcast';
     const { data, error } = await supabase.from('notifications')
-      .insert([{ user_id: user_id || null, message, type, read: false }])
+      .insert([{ user_id: user_id || null, message, type, read: false, user_hidden: false }])
       .select().single();
     if (error) return res.status(500).json({ error: error.message });
     return res.status(201).json(data);
@@ -67,7 +72,7 @@ module.exports = async (req, res) => {
   if (req.method === 'PUT') {
     if (req.query.all === 'true') {
       if (caller.role === 'admin') {
-        // Solo marca las del sistema (bell), conserva el historial del panel
+        // Solo marca las del sistema (bell del admin)
         await supabase.from('notifications').update({ read: true }).eq('type', 'admin');
       } else {
         await supabase.from('notifications').update({ read: true })
@@ -85,29 +90,36 @@ module.exports = async (req, res) => {
 
   // ── DELETE ────────────────────────────────────────────────────────────────
   if (req.method === 'DELETE') {
-    const { id } = req.query;
+    const { id, panel } = req.query;
     if (!id) return res.status(400).json({ error: 'Falta el id' });
 
     if (caller.role === 'admin') {
-      // Admin solo puede borrar alertas del sistema desde el bell.
-      // Los mensajes enviados (historial del panel) se conservan siempre.
-      const { data: notif } = await supabase.from('notifications')
-        .select('id, type').eq('id', id).maybeSingle();
-      if (notif && notif.type !== 'admin') {
-        return res.status(403).json({ error: 'Los mensajes enviados forman parte del historial del panel y no pueden borrarse desde el sitio.' });
+      if (panel === 'true') {
+        // Admin borra desde el panel administrativo → DELETE real permanente
+        const { error } = await supabase.from('notifications').delete().eq('id', id);
+        if (error) return res.status(500).json({ error: error.message });
+        return res.status(200).json({ success: true });
+      } else {
+        // Admin borra desde el bell de CrashLand → soft delete (ocultar),
+        // el registro se conserva en el historial del panel.
+        const { error } = await supabase.from('notifications')
+          .update({ user_hidden: true }).eq('id', id).eq('type', 'admin');
+        if (error) return res.status(500).json({ error: error.message });
+        return res.status(200).json({ success: true });
       }
-      const { error } = await supabase.from('notifications').delete().eq('id', id);
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(200).json({ success: true });
     }
 
-    // Docente/estudiante: solo borra las suyas o broadcasts
-    const { data: notif, error: fetchErr } = await supabase
+    // Docente / Estudiante: soft delete → marca user_hidden=true.
+    // El registro NUNCA se borra de la DB. Permanece en el historial del admin.
+    const { data: notif } = await supabase
       .from('notifications').select('id, user_id, type').eq('id', id).maybeSingle();
-    if (fetchErr || !notif) return res.status(404).json({ error: 'Notificación no encontrada' });
-    const canDelete = String(notif.user_id) === String(caller.id) || notif.user_id === null;
-    if (!canDelete) return res.status(403).json({ error: 'No podés eliminar esta notificación' });
-    const { error } = await supabase.from('notifications').delete().eq('id', id);
+    if (!notif) return res.status(404).json({ error: 'Notificación no encontrada' });
+
+    const canHide = String(notif.user_id) === String(caller.id) || notif.user_id === null;
+    if (!canHide) return res.status(403).json({ error: 'No podés eliminar esta notificación' });
+
+    const { error } = await supabase.from('notifications')
+      .update({ user_hidden: true }).eq('id', id);
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json({ success: true });
   }

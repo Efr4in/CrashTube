@@ -44,16 +44,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 #app.ready{display:flex;}
 
 /* TOPBAR */
-.topbar{position:sticky;top:0;z-index:200;height:var(--topbar-h);background:rgba(7,9,15,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 16px;backdrop-filter:blur(12px);flex-shrink:0;}
+.topbar{position:sticky;top:0;z-index:200;height:var(--topbar-h);background:rgba(7,9,15,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 14px;backdrop-filter:blur(12px);flex-shrink:0;}
 .topbar-menu-btn{display:none;background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 8px;cursor:pointer;color:var(--muted);flex-shrink:0;transition:all .2s;align-items:center;justify-content:center;}
 .topbar-menu-btn:hover{border-color:var(--accent);color:var(--accent);}
 .topbar-menu-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;display:block;}
-.topbar-brand{font-family:var(--font-head);font-weight:800;font-size:15px;display:flex;align-items:center;gap:7px;color:var(--text);white-space:nowrap;}
+.topbar-brand{font-family:var(--font-head);font-weight:800;font-size:15px;display:flex;align-items:center;gap:7px;color:var(--text);white-space:nowrap;flex-shrink:0;}
 .topbar-brand .dot{width:24px;height:24px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .topbar-brand .dot svg{width:12px;height:12px;fill:#07090f;}
-.topbar-badge{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);background:rgba(0,196,167,.1);border:1px solid rgba(0,196,167,.25);padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.topbar-badge{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);background:rgba(0,196,167,.1);border:1px solid rgba(0,196,167,.25);padding:2px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 .topbar-spacer{flex:1;}
-.topbar-right{display:flex;align-items:center;gap:6px;}
+.topbar-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .topbar-user{font-size:12px;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:4px;}
 .topbar-user strong{color:var(--text);}
 .btn-xs{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-body);font-size:11px;cursor:pointer;transition:all .2s;text-decoration:none;white-space:nowrap;}
@@ -67,13 +67,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 /* SIDEBAR */
 .sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:10px 10px 16px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;height:100%;transition:transform .28s cubic-bezier(.4,0,.2,1);}
 .sidebar-section{font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);padding:12px 10px 5px;}
-.nav-item{display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .18s;border:1px solid transparent;user-select:none;white-space:nowrap;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .18s;border:1px solid transparent;user-select:none;white-space:nowrap;overflow:hidden;}
+.nav-item span{overflow:hidden;text-overflow:ellipsis;}
 .nav-item:hover{background:rgba(0,196,167,.06);color:var(--text);}
 .nav-item.active{background:rgba(0,196,167,.1);border-color:rgba(0,196,167,.2);color:var(--accent);}
 .nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;flex-shrink:0;}
-.nav-badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;min-width:18px;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;min-width:18px;text-align:center;flex-shrink:0;}
 .sidebar-bottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:2px;}
-.sidebar-link{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:6px;transition:all .2s;cursor:pointer;background:transparent;border:none;width:100%;font-family:var(--font-body);}
+.sidebar-link{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:6px;transition:all .2s;cursor:pointer;background:transparent;border:none;width:100%;font-family:var(--font-body);white-space:nowrap;}
 .sidebar-link:hover{color:var(--accent);background:rgba(0,196,167,.06);}
 .sidebar-link svg{width:14px;height:14px;stroke:currentColor;fill:none;flex-shrink:0;}
 .sidebar-link.logout:hover{color:var(--accent2);background:rgba(255,94,87,.06);}
@@ -134,8 +135,9 @@ tr:hover td{background:rgba(0,196,167,.02);}
 /* ── NOTIF SECTION ── */
 .notif-form{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:20px;}
 .notif-form h3{font-family:var(--font-head);font-size:14px;font-weight:700;margin-bottom:14px;}
+.notif-row{display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap;}
 
-/* TARGET SELECTOR — reemplaza al <select> simple */
+/* TARGET SELECTOR */
 .ts-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
 .ts-tabs{display:flex;border-bottom:1px solid var(--border);}
 .ts-tab{flex:1;padding:9px 8px;font-family:var(--font-body);font-size:12px;font-weight:500;background:transparent;border:none;color:var(--muted);cursor:pointer;transition:background .18s,color .18s;border-right:1px solid var(--border);}
@@ -154,14 +156,10 @@ tr:hover td{background:rgba(0,196,167,.02);}
 .ts-empty{font-size:12px;color:var(--muted);text-align:center;padding:16px;}
 .ts-selected-label{margin-top:10px;padding:9px 12px;background:rgba(0,196,167,.06);border:1px solid rgba(0,196,167,.2);border-radius:7px;font-size:12px;color:var(--accent);font-weight:500;}
 
-.notif-row{display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap;}
-
 /* IMG UPLOAD */
 .img-upload-area{width:100%;aspect-ratio:16/9;background:var(--surface);border:2px dashed var(--border);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color .2s;gap:6px;}
 .img-upload-area:hover{border-color:var(--accent);}
 .img-upload-area img{width:100%;height:100%;object-fit:cover;}
-.img-upload-area svg{width:24px;height:24px;stroke:var(--muted);fill:none;opacity:.5;}
-.img-upload-area span{font-size:11px;color:var(--muted);}
 #fileInput{display:none;}
 
 /* MODAL */
@@ -183,18 +181,24 @@ tr:hover td{background:rgba(0,196,167,.02);}
 .btn-full:disabled{opacity:.5;cursor:not-allowed;}
 .btn-full.purple{background:var(--purple);color:#fff;}
 .btn-full.purple:hover{background:#8580ff;}
-.code-display{font-family:var(--font-head);font-size:32px;font-weight:800;letter-spacing:12px;color:var(--accent);text-align:center;background:rgba(0,196,167,.06);border:1px solid rgba(0,196,167,.2);border-radius:10px;padding:14px;margin:12px 0;}
 
 /* TOAST */
 .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(80px);z-index:600;background:rgba(13,17,23,.97);border:1px solid var(--accent);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:500;color:var(--accent);opacity:0;transition:all .3s cubic-bezier(.175,.885,.32,1.275);pointer-events:none;white-space:nowrap;max-width:calc(100vw - 32px);text-align:center;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 .toast.error{border-color:var(--accent2);color:var(--accent2);}
 
-/* RESPONSIVE */
+/* ── RESPONSIVE ── */
 @media(max-width:768px){
   .topbar-menu-btn{display:flex;}
   .topbar-user{display:none;}
-  .sidebar{position:fixed;top:0;left:0;bottom:0;z-index:160;width:auto;min-width:200px;max-width:80vw;height:100%;transform:translateX(-100%);box-shadow:4px 0 20px rgba(0,0,0,.4);}
+  /* FIX: sidebar drawer con ancho fijo para que el texto no se corte */
+  .sidebar{
+    position:fixed;top:0;left:0;bottom:0;z-index:160;
+    width:240px;          /* ancho fijo — evita el corte del texto */
+    height:100%;
+    transform:translateX(-100%);
+    box-shadow:4px 0 20px rgba(0,0,0,.4);
+  }
   .sidebar.open{transform:translateX(0);}
   .section{padding:16px 14px 60px;}
   .page-title{font-size:17px;}
@@ -204,8 +208,10 @@ tr:hover td{background:rgba(0,196,167,.02);}
   .form-row{grid-template-columns:1fr;}
 }
 @media(max-width:480px){
-  .topbar{padding:0 12px;gap:8px;}
+  .topbar{padding:0 10px;gap:6px;}
+  /* FIX: en móvil muy pequeño, ocultar solo el texto "CrashTube", conservar dot */
   .topbar-brand span{display:none;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
   .ts-tab{font-size:11px;padding:8px 4px;}
 }
 </style>
@@ -251,30 +257,30 @@ tr:hover td{background:rgba(0,196,167,.02);}
     <nav class="sidebar" id="sidebar">
       <div class="sidebar-section">General</div>
       <div class="nav-item active" onclick="goTo(this,'dashboard')">
-        <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Dashboard</span>
       </div>
       <div class="sidebar-section">Contenido</div>
       <div class="nav-item" onclick="goTo(this,'videos')">
-        <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Videos
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Videos</span>
       </div>
       <div class="sidebar-section">Usuarios</div>
       <div class="nav-item" onclick="goTo(this,'requests')">
         <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 2v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        Solicitudes <span class="nav-badge" id="reqBadge" style="display:none">0</span>
+        <span>Solicitudes</span><span class="nav-badge" id="reqBadge" style="display:none">0</span>
       </div>
       <div class="nav-item" onclick="goTo(this,'users')">
-        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 2v2"/><circle cx="9" cy="7" r="4"/></svg>Profesores
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 2v2"/><circle cx="9" cy="7" r="4"/></svg><span>Profesores</span>
       </div>
       <div class="nav-item" onclick="goTo(this,'students')">
-        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>Estudiantes
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg><span>Estudiantes</span>
       </div>
       <div class="sidebar-section">Comunicación</div>
       <div class="nav-item" onclick="goTo(this,'notifs')">
-        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notificaciones
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>Notificaciones</span>
       </div>
       <div class="sidebar-section">Sistema</div>
       <div class="nav-item" onclick="goTo(this,'admins')">
-        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Administradores
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Administradores</span>
       </div>
       <div class="sidebar-bottom">
         <a href="/home" class="sidebar-link">
@@ -360,12 +366,10 @@ tr:hover td{background:rgba(0,196,167,.02);}
       <!-- NOTIFICACIONES -->
       <div class="section" id="sec-notifs">
         <h1 class="page-title">Notificaciones</h1>
-        <p class="page-sub">Enviá avisos o comunicados. El historial de abajo es el respaldo de todos los mensajes enviados.</p>
+        <p class="page-sub">Enviá avisos o comunicados. El historial de abajo es el registro permanente — solo puede borrarse desde acá.</p>
 
         <div class="notif-form">
           <h3>Enviar mensaje</h3>
-
-          <!-- TARGET SELECTOR CON BUSCADOR -->
           <div class="fg">
             <label>Destinatario</label>
             <div class="ts-wrap">
@@ -374,16 +378,13 @@ tr:hover td{background:rgba(0,196,167,.02);}
                 <button class="ts-tab" onclick="switchTsTab(this,'teacher')">👤 Docentes</button>
                 <button class="ts-tab" onclick="switchTsTab(this,'student')">🎓 Estudiantes</button>
               </div>
-              <!-- Broadcast -->
               <div class="ts-panel" id="ts-broadcast">
-                <p class="ts-broadcast-info">El mensaje llegará a <strong>todos los docentes y estudiantes</strong> registrados simultáneamente.</p>
+                <p class="ts-broadcast-info">El mensaje llegará a <strong>todos los docentes y estudiantes</strong> simultáneamente.</p>
               </div>
-              <!-- Docentes -->
               <div class="ts-panel" id="ts-teacher" style="display:none">
                 <input class="ts-search" id="ts-teacher-search" type="text" placeholder="Buscar por nombre o usuario…" oninput="filterTsTeachers()"/>
                 <div class="ts-results" id="ts-teacher-results"></div>
               </div>
-              <!-- Estudiantes -->
               <div class="ts-panel" id="ts-student" style="display:none">
                 <input class="ts-search" id="ts-student-search" type="text" placeholder="Buscar por código…" oninput="filterTsStudents()"/>
                 <div class="ts-results" id="ts-student-results"></div>
@@ -391,7 +392,6 @@ tr:hover td{background:rgba(0,196,167,.02);}
             </div>
             <div class="ts-selected-label" id="ts-selected-label">📢 Todos (broadcast)</div>
           </div>
-
           <div class="fg"><label>Mensaje</label><textarea id="notifMsg" placeholder="Escribí tu mensaje aquí…"></textarea></div>
           <div class="notif-row">
             <button class="btn-sm primary" onclick="sendNotif()">Enviar</button>
@@ -401,10 +401,10 @@ tr:hover td{background:rgba(0,196,167,.02);}
 
         <p class="page-sub" style="margin-bottom:10px">
           Historial de mensajes enviados
-          <span style="color:var(--accent);font-size:11px;margin-left:8px;">— este registro no se puede borrar desde el sitio</span>
+          <span style="color:var(--muted);font-size:11px;margin-left:8px">— Los mensajes solo se borran desde acá. Borrarlos del bell no los elimina.</span>
         </p>
         <div class="table-wrap"><table>
-          <thead><tr><th>Mensaje</th><th>Para</th><th>Fecha</th></tr></thead>
+          <thead><tr><th>Mensaje</th><th>Para</th><th>Fecha</th><th></th></tr></thead>
           <tbody id="notifHistory"></tbody>
         </table></div>
       </div>
@@ -448,8 +448,8 @@ tr:hover td{background:rgba(0,196,167,.02);}
       <div class="fg">
         <label>Imagen de portada</label>
         <div class="img-upload-area" id="vmImgPreview" onclick="document.getElementById('fileInput').click()">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <span>Clic para seleccionar imagen</span>
+          <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:var(--muted);fill:none;opacity:.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span style="font-size:11px;color:var(--muted)">Clic para seleccionar imagen</span>
         </div>
         <input type="file" id="fileInput" accept="image/*" onchange="previewImage(this)"/>
       </div>
@@ -459,7 +459,7 @@ tr:hover td{background:rgba(0,196,167,.02);}
   </div>
 </div>
 
-<!-- MODAL AGREGAR ESTUDIANTE -->
+<!-- MODAL ESTUDIANTE -->
 <div class="modal-overlay" id="addStudentModal">
   <div class="modal">
     <div class="modal-header">
@@ -467,7 +467,7 @@ tr:hover td{background:rgba(0,196,167,.02);}
       <button class="modal-close" onclick="closeModal('addStudentModal')"><svg viewBox="0 0 24 24" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
-      <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">El código de 4 dígitos funciona como <strong style="color:var(--text)">usuario y contraseña</strong> del estudiante. Debe ser único.</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">El código de 4 dígitos funciona como <strong style="color:var(--text)">usuario y contraseña</strong> del estudiante.</p>
       <div class="fg">
         <label>Código del estudiante (4 dígitos numéricos) *</label>
         <input type="text" id="stuCode" inputmode="numeric" maxlength="4" placeholder="0000" style="font-family:var(--font-head);font-size:28px;font-weight:800;letter-spacing:10px;text-align:center;"/>
@@ -478,7 +478,7 @@ tr:hover td{background:rgba(0,196,167,.02);}
   </div>
 </div>
 
-<!-- MODAL ADD ADMIN -->
+<!-- MODAL ADMIN -->
 <div class="modal-overlay" id="addAdminModal">
   <div class="modal">
     <div class="modal-header">
@@ -498,77 +498,50 @@ tr:hover td{background:rgba(0,196,167,.02);}
 <script>
 let SESSION=null,allVideos=[],allUsers=[],allRequests=[],allAdmins=[],allStudents=[];
 let selectedFile=null;
-
-// ── TARGET SELECTOR STATE ────────────────────────────────────────────────────
 let selectedTarget={ id:null, label:'📢 Todos (broadcast)' };
 
-function switchTsTab(el, tab){
-  document.querySelectorAll('.ts-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.ts-panel').forEach(p=>p.style.display='none');
-  el.classList.add('active');
-  document.getElementById('ts-'+tab).style.display='block';
-  // Al cambiar de tab resetear selección a broadcast
-  selectedTarget={ id:null, label:'📢 Todos (broadcast)' };
-  updateTsLabel();
-  if(tab==='teacher') filterTsTeachers();
-  if(tab==='student') filterTsStudents();
-}
-
-function filterTsTeachers(){
-  const q=(document.getElementById('ts-teacher-search').value||'').toLowerCase();
-  renderTsItems('ts-teacher-results',
-    (q ? allUsers.filter(u=>(u.full_name||'').toLowerCase().includes(q)||(u.username||'').toLowerCase().includes(q)) : allUsers)
-    .map(u=>({ id:u.id, label:`👤 @${esc(u.username)} — ${esc(u.full_name||'')}` }))
-  );
-}
-
-function filterTsStudents(){
-  const q=(document.getElementById('ts-student-search').value||'');
-  renderTsItems('ts-student-results',
-    (q ? allStudents.filter(s=>s.code.includes(q)) : allStudents)
-    .map(s=>({ id:s.id, label:`🎓 Est. ${esc(s.code)}` }))
-  );
-}
-
-function renderTsItems(containerId, items){
-  const c=document.getElementById(containerId);
-  if(!items.length){ c.innerHTML='<div class="ts-empty">Sin resultados</div>'; return; }
-  c.innerHTML=items.map(item=>`
-    <div class="ts-item ${selectedTarget.id===item.id?'selected':''}"
-         onclick="selectTsTarget('${item.id}','${item.label.replace(/'/g,"&#39;")}')">
-      ${item.label}
-    </div>`).join('');
-}
-
-function selectTsTarget(id, label){
-  selectedTarget={ id, label };
-  updateTsLabel();
-  // Actualizar visual de items seleccionados
-  document.querySelectorAll('.ts-item').forEach(el=>el.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-}
-
-function updateTsLabel(){
-  document.getElementById('ts-selected-label').textContent='Destinatario: '+selectedTarget.label;
-}
-
-// ── UTILS ────────────────────────────────────────────────────────────────────
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function authH(){return{'Content-Type':'application/json','Authorization':`Bearer ${SESSION.token}`};}
 function parseDriveId(url){const m=(url||'').match(/\/file\/d\/([a-zA-Z0-9_-]+)/);return m?m[1]:null;}
 function showToast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' error':'');t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3500);}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-
-/* SIDEBAR */
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
 
+/* TARGET SELECTOR */
+function switchTsTab(el,tab){
+  document.querySelectorAll('.ts-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ts-panel').forEach(p=>p.style.display='none');
+  el.classList.add('active');
+  document.getElementById('ts-'+tab).style.display='block';
+  selectedTarget={id:null,label:'📢 Todos (broadcast)'};
+  updateTsLabel();
+  if(tab==='teacher'){document.getElementById('ts-teacher-search').value='';filterTsTeachers();}
+  if(tab==='student'){document.getElementById('ts-student-search').value='';filterTsStudents();}
+}
+function filterTsTeachers(){
+  const q=(document.getElementById('ts-teacher-search').value||'').toLowerCase();
+  renderTsItems('ts-teacher-results',(q?allUsers.filter(u=>(u.full_name||'').toLowerCase().includes(q)||(u.username||'').toLowerCase().includes(q)):allUsers).map(u=>({id:u.id,label:`👤 @${esc(u.username)} — ${esc(u.full_name||'')}`})));
+}
+function filterTsStudents(){
+  const q=(document.getElementById('ts-student-search').value||'');
+  renderTsItems('ts-student-results',(q?allStudents.filter(s=>s.code.includes(q)):allStudents).map(s=>({id:s.id,label:`🎓 Est. ${esc(s.code)}`})));
+}
+function renderTsItems(containerId,items){
+  const c=document.getElementById(containerId);
+  if(!items.length){c.innerHTML='<div class="ts-empty">Sin resultados</div>';return;}
+  c.innerHTML=items.map(item=>`<div class="ts-item ${selectedTarget.id===item.id?'selected':''}" onclick="selectTsTarget('${item.id}','${item.label.replace(/'/g,"&#39;")}')">${item.label}</div>`).join('');
+}
+function selectTsTarget(id,label){
+  selectedTarget={id,label};updateTsLabel();
+  document.querySelectorAll('.ts-item').forEach(el=>el.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+}
+function updateTsLabel(){document.getElementById('ts-selected-label').textContent='Destinatario: '+selectedTarget.label;}
+
 /* INIT */
 (function init(){
-  try{
-    const s=JSON.parse(localStorage.getItem('ct_session')||'null');
-    if(s&&s.token&&s.role==='admin'){SESSION=s;bootApp();return;}
-  }catch{}
+  try{const s=JSON.parse(localStorage.getItem('ct_session')||'null');if(s&&s.token&&s.role==='admin'){SESSION=s;bootApp();return;}}catch{}
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 })();
@@ -580,10 +553,8 @@ function bootApp(){
   loadAll();
 }
 
-/* LOGIN LOCAL */
 async function doLogin(){
-  const username=document.getElementById('lUser').value.trim();
-  const password=document.getElementById('lPass').value;
+  const username=document.getElementById('lUser').value.trim();const password=document.getElementById('lPass').value;
   const btn=document.getElementById('btnLogin');const errEl=document.getElementById('loginErr');
   errEl.style.display='none';
   if(!username||!password){errEl.textContent='Completá los campos.';errEl.style.display='block';return;}
@@ -599,7 +570,6 @@ async function doLogin(){
 
 function logout(){if(!confirm('¿Cerrar sesión?'))return;localStorage.removeItem('ct_session');window.location.href='/';}
 
-/* NAVEGACIÓN */
 function goTo(el,section){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -615,7 +585,7 @@ async function loadRequests(){const r=await fetch('/api/users?filter=pending',{h
 async function loadAdmins(){const r=await fetch('/api/users?action=admins',{headers:authH()});allAdmins=await r.json();renderAdmins(allAdmins);}
 async function loadStudents(){try{const r=await fetch('/api/auth?action=students',{headers:authH()});allStudents=await r.json();renderStudents(allStudents);}catch{allStudents=[];}}
 
-// FIX: usa ?view=history para que el panel vea todo el historial
+// FIX: usa ?view=history para historial completo sin filtro de user_hidden
 async function loadNotifHistory(){
   const r=await fetch('/api/notifications?view=history',{headers:authH()});
   const d=await r.json();
@@ -671,9 +641,9 @@ function renderAdmins(list){
 
 function renderNotifHistory(list){
   const body=document.getElementById('notifHistory');
-  // Filtrar solo los mensajes enviados (broadcast/user), no los del sistema
+  // Solo mensajes enviados (broadcast/user), no alertas del sistema
   const sent=list.filter(n=>n.type==='broadcast'||n.type==='user');
-  if(!sent.length){body.innerHTML='<tr class="empty-row"><td colspan="3">Sin mensajes enviados aún</td></tr>';return;}
+  if(!sent.length){body.innerHTML='<tr class="empty-row"><td colspan="4">Sin mensajes enviados aún</td></tr>';return;}
   body.innerHTML=sent.map(n=>{
     let para='—';
     if(n.type==='broadcast') para='<span class="tag blue">Todos</span>';
@@ -684,8 +654,24 @@ function renderNotifHistory(list){
       else if(stu) para=`<span class="tag purple">Est. ${esc(stu.code)}</span>`;
       else para=`<span class="tag yellow">Usuario</span>`;
     }
-    return `<tr><td style="max-width:280px;font-size:12px">${esc(n.message)}</td><td>${para}</td><td style="color:var(--muted);font-size:11px;white-space:nowrap">${new Date(n.created_at).toLocaleDateString('es')}</td></tr>`;
+    // FIX: botón de borrar del historial usa ?panel=true → DELETE real permanente
+    return `<tr>
+      <td style="max-width:280px;font-size:12px">${esc(n.message)}</td>
+      <td>${para}</td>
+      <td style="color:var(--muted);font-size:11px;white-space:nowrap">${new Date(n.created_at).toLocaleDateString('es')}</td>
+      <td><button class="act-btn danger" title="Borrar del historial permanentemente" onclick="deleteHistoryNotif('${n.id}')">×</button></td>
+    </tr>`;
   }).join('');
+}
+
+/* NOTIF HISTORY DELETE — solo desde el panel, borra permanentemente */
+async function deleteHistoryNotif(id){
+  if(!confirm('¿Borrar este mensaje del historial? Esta acción es permanente.'))return;
+  // ?panel=true → el API hace DELETE real (no soft delete)
+  const r=await fetch(`/api/notifications?id=${id}&panel=true`,{method:'DELETE',headers:authH()});
+  if(!r.ok){showToast('Error al borrar',true);return;}
+  showToast('Mensaje eliminado del historial');
+  await loadNotifHistory();
 }
 
 /* ACCIONES */
