@@ -191,15 +191,35 @@ tr:hover td{background:rgba(0,196,167,.02);}
 @media(max-width:768px){
   .topbar-menu-btn{display:flex;}
   .topbar-user{display:none;}
-  /* FIX: sidebar drawer con ancho fijo para que el texto no se corte */
+  /* SIDEBAR DRAWER MÓVIL — ancho controlado, texto siempre visible */
   .sidebar{
     position:fixed;top:0;left:0;bottom:0;z-index:160;
-    width:240px;          /* ancho fijo — evita el corte del texto */
+    width:72vw;           /* 72% del viewport: visible pero no invasivo */
+    max-width:260px;      /* nunca más ancho que 260px en tablets */
+    min-width:200px;      /* nunca más angosto que 200px */
     height:100%;
     transform:translateX(-100%);
-    box-shadow:4px 0 20px rgba(0,0,0,.4);
+    box-shadow:6px 0 24px rgba(0,0,0,.5);
+    padding:12px 8px 16px; /* padding lateral reducido para más espacio al texto */
   }
   .sidebar.open{transform:translateX(0);}
+
+  /* Items del sidebar: texto sin cortar, icono y texto alineados */
+  .nav-item{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    padding:10px 12px;
+    font-size:14px;
+  }
+  .sidebar-section{
+    padding:14px 8px 5px;
+    font-size:9px;
+  }
+  .sidebar-link{
+    padding:10px 8px;
+    font-size:13px;
+  }
   .section{padding:16px 14px 60px;}
   .page-title{font-size:17px;}
   .stats-grid{grid-template-columns:1fr 1fr;gap:8px;}
