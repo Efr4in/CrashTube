@@ -22,6 +22,8 @@ module.exports = async (req, res) => {
   const caller = verifyToken(req);
   if (!caller) return res.status(401).json({ error: 'No autenticado' });
 
+  const callerId = String(caller.id);
+
   // ── GET ──────────────────────────────────────────────────────────────────
   if (req.method === 'GET') {
     let query;
@@ -32,14 +34,13 @@ module.exports = async (req, res) => {
         query = supabase.from('notifications').select('*')
           .order('created_at', { ascending: false }).limit(200);
       } else {
-        // Bell del admin en CrashLand: alertas del sistema (type=admin)
-        // que el admin no haya ocultado individualmente
+        // Bell del admin: alertas del sistema (type=admin)
         query = supabase.from('notifications').select('*')
           .eq('type', 'admin')
           .order('created_at', { ascending: false }).limit(100);
       }
     } else {
-      // Docente o estudiante: sus notificaciones directas + broadcasts
+      // Docente o estudiante: sus directas + broadcasts
       query = supabase.from('notifications').select('*')
         .or(`user_id.eq.${caller.id},and(user_id.is.null,type.eq.broadcast)`)
         .order('created_at', { ascending: false }).limit(50);
@@ -48,15 +49,24 @@ module.exports = async (req, res) => {
     const { data, error } = await query;
     if (error) return res.status(500).json({ error: error.message });
 
-    // Filtrar las que el caller ocultó individualmente (hidden_by contiene su ID)
-    const callerId = String(caller.id);
-    const visible = (data || []).filter(n => {
-      const hiddenBy = Array.isArray(n.hidden_by) ? n.hidden_by : [];
-      return !hiddenBy.map(String).includes(callerId);
-    });
+    // Filtrar las que el caller ocultó (hidden_by contiene su ID)
+    // y mapear read según si el caller está en read_by
+    const processed = (data || [])
+      .filter(n => {
+        const hiddenBy = Array.isArray(n.hidden_by) ? n.hidden_by : [];
+        return !hiddenBy.map(String).includes(callerId);
+      })
+      .map(n => {
+        const readBy = Array.isArray(n.read_by) ? n.read_by : [];
+        return {
+          ...n,
+          // 'read' se calcula por caller, no es el campo global
+          read: readBy.map(String).includes(callerId),
+        };
+      });
 
-    const unread = visible.filter(n => !n.read).length;
-    return res.status(200).json({ notifications: visible, unread });
+    const unread = processed.filter(n => !n.read).length;
+    return res.status(200).json({ notifications: processed, unread });
   }
 
   // ── POST — enviar notificación (solo admin) ───────────────────────────────
@@ -71,6 +81,7 @@ module.exports = async (req, res) => {
         message,
         type,
         read: false,
+        read_by: [],
         user_hidden: false,
         hidden_by: []
       }])
@@ -82,20 +93,49 @@ module.exports = async (req, res) => {
   // ── PUT — marcar como leída ───────────────────────────────────────────────
   if (req.method === 'PUT') {
     if (req.query.all === 'true') {
+      // Marcar todas como leídas para el caller:
+      // Obtenemos las notificaciones visibles para él y le agregamos su ID a read_by
+      let query;
       if (caller.role === 'admin') {
-        await supabase.from('notifications').update({ read: true }).eq('type', 'admin');
+        const { data } = await supabase.from('notifications').select('id, read_by').eq('type', 'admin');
+        for (const n of (data || [])) {
+          const readBy = Array.isArray(n.read_by) ? n.read_by : [];
+          if (!readBy.map(String).includes(callerId)) {
+            readBy.push(callerId);
+            await supabase.from('notifications').update({ read_by: readBy, read: true }).eq('id', n.id);
+          }
+        }
       } else {
-        await supabase.from('notifications').update({ read: true })
+        const { data } = await supabase.from('notifications').select('id, read_by')
           .or(`user_id.eq.${caller.id},and(user_id.is.null,type.eq.broadcast)`);
+        for (const n of (data || [])) {
+          const readBy = Array.isArray(n.read_by) ? n.read_by : [];
+          if (!readBy.map(String).includes(callerId)) {
+            readBy.push(callerId);
+            await supabase.from('notifications').update({ read_by: readBy }).eq('id', n.id);
+          }
+        }
       }
       return res.status(200).json({ success: true });
     }
+
+    // Marcar una notificación individual como leída para el caller
     const { id } = req.query;
     if (!id) return res.status(400).json({ error: 'Falta el id' });
+
+    const { data: notif } = await supabase
+      .from('notifications').select('id, read_by').eq('id', id).maybeSingle();
+    if (!notif) return res.status(404).json({ error: 'Notificación no encontrada' });
+
+    const readBy = Array.isArray(notif.read_by) ? notif.read_by : [];
+    if (!readBy.map(String).includes(callerId)) {
+      readBy.push(callerId);
+    }
+
     const { data, error } = await supabase.from('notifications')
-      .update({ read: true }).eq('id', id).select().single();
+      .update({ read_by: readBy }).eq('id', id).select().single();
     if (error) return res.status(500).json({ error: error.message });
-    return res.status(200).json(data);
+    return res.status(200).json({ ...data, read: true });
   }
 
   // ── DELETE ────────────────────────────────────────────────────────────────
@@ -103,38 +143,28 @@ module.exports = async (req, res) => {
     const { id, panel } = req.query;
     if (!id) return res.status(400).json({ error: 'Falta el id' });
 
-    // ── Admin borra desde el panel administrativo → DELETE real permanente
+    // Admin borra desde el panel administrativo → DELETE real permanente
     if (caller.role === 'admin' && panel === 'true') {
       const { error } = await supabase.from('notifications').delete().eq('id', id);
       if (error) return res.status(500).json({ error: error.message });
       return res.status(200).json({ success: true });
     }
 
-    // ── Cualquier usuario (incluyendo admin desde el bell) → soft delete
-    // Agrega el ID del caller a hidden_by sin borrar el registro.
-    // Así cada usuario oculta la notificación solo para sí mismo,
-    // y el historial del panel siempre conserva todo.
+    // Cualquier usuario → soft delete individual (agrega ID a hidden_by)
     const { data: notif } = await supabase
       .from('notifications').select('id, user_id, type, hidden_by').eq('id', id).maybeSingle();
-
     if (!notif) return res.status(404).json({ error: 'Notificación no encontrada' });
 
-    // Verificar que el caller tiene derecho a ocultar esta notificación
     const canHide = caller.role === 'admin'
-      || String(notif.user_id) === String(caller.id)
-      || notif.user_id === null; // broadcast
-
+      || String(notif.user_id) === callerId
+      || notif.user_id === null;
     if (!canHide) return res.status(403).json({ error: 'No podés eliminar esta notificación' });
 
-    // Agregar el caller a hidden_by (sin duplicados)
-    const currentHidden = Array.isArray(notif.hidden_by) ? notif.hidden_by : [];
-    const callerId = String(caller.id);
-    if (!currentHidden.map(String).includes(callerId)) {
-      currentHidden.push(callerId);
-    }
+    const hiddenBy = Array.isArray(notif.hidden_by) ? notif.hidden_by : [];
+    if (!hiddenBy.map(String).includes(callerId)) hiddenBy.push(callerId);
 
     const { error } = await supabase.from('notifications')
-      .update({ hidden_by: currentHidden }).eq('id', id);
+      .update({ hidden_by: hiddenBy }).eq('id', id);
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json({ success: true });
   }
