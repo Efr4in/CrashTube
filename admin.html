@@ -520,7 +520,7 @@ tr:hover td{background:rgba(0,196,167,.02);}
 </div>
 
 <script>
-let SESSION=null,allVideos=[],allUsers=[],allRequests=[],allAdmins=[],allStudents=[];
+let SESSION=null,allVideos=[],allUsers=[],allRequests=[],allAdmins=[],allStudents=[];let notifHistoryData=[];
 let selectedFile=null;
 let selectedTarget={ id:null, label:'📢 Todos (broadcast)' };
 
@@ -602,7 +602,7 @@ function goTo(el,section){
 }
 
 /* CARGA */
-async function loadAll(){await Promise.all([loadVideos(),loadUsers(),loadRequests(),loadAdmins(),loadStudents(),loadNotifHistory()]);updateDashboard();updateRequestBadge();}
+async function loadAll(){await Promise.all([loadVideos(),loadUsers(),loadRequests(),loadAdmins(),loadStudents(),loadNotifHistory()]);updateDashboard();updateRequestBadge();renderNotifHistory(notifHistoryData);}
 async function loadVideos(){const r=await fetch('/api/videos');allVideos=await r.json();renderVideos(allVideos);}
 async function loadUsers(){const r=await fetch('/api/users?filter=validated',{headers:authH()});allUsers=await r.json();renderUsers(allUsers);}
 async function loadRequests(){const r=await fetch('/api/users?filter=pending',{headers:authH()});allRequests=await r.json();renderRequests(allRequests);updateRequestBadge();}
@@ -613,7 +613,9 @@ async function loadStudents(){try{const r=await fetch('/api/auth?action=students
 async function loadNotifHistory(){
   const r=await fetch('/api/notifications?view=history',{headers:authH()});
   const d=await r.json();
-  renderNotifHistory(d.notifications||[]);
+  // Solo guarda los datos — NO renderiza aquí.
+  // renderNotifHistory se llama desde loadAll() DESPUÉS de que allStudents esté cargado.
+  notifHistoryData=d.notifications||[];
 }
 
 function updateDashboard(){
