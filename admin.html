@@ -602,12 +602,41 @@ function goTo(el,section){
 }
 
 /* CARGA */
-async function loadAll(){await Promise.all([loadVideos(),loadUsers(),loadRequests(),loadAdmins(),loadStudents(),loadNotifHistory()]);updateDashboard();updateRequestBadge();renderNotifHistory(notifHistoryData);}
+async function loadAll(){await Promise.all([loadVideos(),loadUsers(),loadRequests(),loadAdmins(),loadStudents(),loadNotifHistory()]);updateDashboard();updateRequestBadge();renderNotifHistory(notifHistoryData);startPolling();}
 async function loadVideos(){const r=await fetch('/api/videos');allVideos=await r.json();renderVideos(allVideos);}
 async function loadUsers(){const r=await fetch('/api/users?filter=validated',{headers:authH()});allUsers=await r.json();renderUsers(allUsers);}
 async function loadRequests(){const r=await fetch('/api/users?filter=pending',{headers:authH()});allRequests=await r.json();renderRequests(allRequests);updateRequestBadge();}
 async function loadAdmins(){const r=await fetch('/api/users?action=admins',{headers:authH()});allAdmins=await r.json();renderAdmins(allAdmins);}
 async function loadStudents(){try{const r=await fetch('/api/auth?action=students',{headers:authH()});allStudents=await r.json();renderStudents(allStudents);}catch{allStudents=[];}}
+
+// ── POLLING DE SOLICITUDES ─────────────────────────────────────────────────
+// Cada 20 segundos verifica si llegaron nuevas solicitudes de docentes.
+// Si hay más que antes, actualiza la tabla y el badge sin refrescar la página.
+let _lastReqCount = 0;
+async function pollRequests(){
+  if(!SESSION) return;
+  try{
+    const r = await fetch('/api/users?filter=pending', {headers: authH()});
+    if(!r.ok) return;
+    const data = await r.json();
+    // Solo actualiza si cambió la cantidad
+    if(data.length !== _lastReqCount){
+      allRequests = data;
+      renderRequests(allRequests);
+      updateRequestBadge();
+      updateDashboard();
+      if(data.length > _lastReqCount){
+        showToast(`Nueva solicitud de docente recibida ✓`);
+      }
+      _lastReqCount = data.length;
+    }
+  }catch{}
+}
+// Arrancar polling después de la carga inicial
+function startPolling(){
+  _lastReqCount = allRequests.length;
+  setInterval(pollRequests, 20000); // cada 20 segundos
+}
 
 // FIX: usa ?view=history para historial completo sin filtro de user_hidden
 async function loadNotifHistory(){
