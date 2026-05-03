@@ -28,31 +28,35 @@ module.exports = async (req, res) => {
 
     if (caller.role === 'admin') {
       if (req.query.view === 'history') {
-        // Panel admin: historial COMPLETO — nunca filtra user_hidden,
-        // porque el historial es el registro permanente de todo lo enviado.
+        // Panel admin: historial COMPLETO sin ningún filtro
         query = supabase.from('notifications').select('*')
           .order('created_at', { ascending: false }).limit(200);
       } else {
-        // Bell del admin en CrashLand: solo alertas del sistema (type=admin),
-        // excluyendo las que el admin marcó como ocultas desde el bell.
+        // Bell del admin en CrashLand: alertas del sistema (type=admin)
+        // que el admin no haya ocultado individualmente
         query = supabase.from('notifications').select('*')
           .eq('type', 'admin')
-          .or('user_hidden.is.null,user_hidden.eq.false')
           .order('created_at', { ascending: false }).limit(100);
       }
     } else {
-      // Docente o estudiante: sus notificaciones + broadcasts,
-      // excluyendo las que él mismo marcó como ocultas.
+      // Docente o estudiante: sus notificaciones directas + broadcasts
       query = supabase.from('notifications').select('*')
         .or(`user_id.eq.${caller.id},and(user_id.is.null,type.eq.broadcast)`)
-        .or('user_hidden.is.null,user_hidden.eq.false')
         .order('created_at', { ascending: false }).limit(50);
     }
 
     const { data, error } = await query;
     if (error) return res.status(500).json({ error: error.message });
-    const unread = (data || []).filter(n => !n.read).length;
-    return res.status(200).json({ notifications: data || [], unread });
+
+    // Filtrar las que el caller ocultó individualmente (hidden_by contiene su ID)
+    const callerId = String(caller.id);
+    const visible = (data || []).filter(n => {
+      const hiddenBy = Array.isArray(n.hidden_by) ? n.hidden_by : [];
+      return !hiddenBy.map(String).includes(callerId);
+    });
+
+    const unread = visible.filter(n => !n.read).length;
+    return res.status(200).json({ notifications: visible, unread });
   }
 
   // ── POST — enviar notificación (solo admin) ───────────────────────────────
@@ -62,7 +66,14 @@ module.exports = async (req, res) => {
     if (!message) return res.status(400).json({ error: 'Falta el mensaje' });
     const type = user_id ? 'user' : 'broadcast';
     const { data, error } = await supabase.from('notifications')
-      .insert([{ user_id: user_id || null, message, type, read: false, user_hidden: false }])
+      .insert([{
+        user_id: user_id || null,
+        message,
+        type,
+        read: false,
+        user_hidden: false,
+        hidden_by: []
+      }])
       .select().single();
     if (error) return res.status(500).json({ error: error.message });
     return res.status(201).json(data);
@@ -72,7 +83,6 @@ module.exports = async (req, res) => {
   if (req.method === 'PUT') {
     if (req.query.all === 'true') {
       if (caller.role === 'admin') {
-        // Solo marca las del sistema (bell del admin)
         await supabase.from('notifications').update({ read: true }).eq('type', 'admin');
       } else {
         await supabase.from('notifications').update({ read: true })
@@ -93,33 +103,38 @@ module.exports = async (req, res) => {
     const { id, panel } = req.query;
     if (!id) return res.status(400).json({ error: 'Falta el id' });
 
-    if (caller.role === 'admin') {
-      if (panel === 'true') {
-        // Admin borra desde el panel administrativo → DELETE real permanente
-        const { error } = await supabase.from('notifications').delete().eq('id', id);
-        if (error) return res.status(500).json({ error: error.message });
-        return res.status(200).json({ success: true });
-      } else {
-        // Admin borra desde el bell de CrashLand → soft delete (ocultar),
-        // el registro se conserva en el historial del panel.
-        const { error } = await supabase.from('notifications')
-          .update({ user_hidden: true }).eq('id', id).eq('type', 'admin');
-        if (error) return res.status(500).json({ error: error.message });
-        return res.status(200).json({ success: true });
-      }
+    // ── Admin borra desde el panel administrativo → DELETE real permanente
+    if (caller.role === 'admin' && panel === 'true') {
+      const { error } = await supabase.from('notifications').delete().eq('id', id);
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json({ success: true });
     }
 
-    // Docente / Estudiante: soft delete → marca user_hidden=true.
-    // El registro NUNCA se borra de la DB. Permanece en el historial del admin.
+    // ── Cualquier usuario (incluyendo admin desde el bell) → soft delete
+    // Agrega el ID del caller a hidden_by sin borrar el registro.
+    // Así cada usuario oculta la notificación solo para sí mismo,
+    // y el historial del panel siempre conserva todo.
     const { data: notif } = await supabase
-      .from('notifications').select('id, user_id, type').eq('id', id).maybeSingle();
+      .from('notifications').select('id, user_id, type, hidden_by').eq('id', id).maybeSingle();
+
     if (!notif) return res.status(404).json({ error: 'Notificación no encontrada' });
 
-    const canHide = String(notif.user_id) === String(caller.id) || notif.user_id === null;
+    // Verificar que el caller tiene derecho a ocultar esta notificación
+    const canHide = caller.role === 'admin'
+      || String(notif.user_id) === String(caller.id)
+      || notif.user_id === null; // broadcast
+
     if (!canHide) return res.status(403).json({ error: 'No podés eliminar esta notificación' });
 
+    // Agregar el caller a hidden_by (sin duplicados)
+    const currentHidden = Array.isArray(notif.hidden_by) ? notif.hidden_by : [];
+    const callerId = String(caller.id);
+    if (!currentHidden.map(String).includes(callerId)) {
+      currentHidden.push(callerId);
+    }
+
     const { error } = await supabase.from('notifications')
-      .update({ user_hidden: true }).eq('id', id);
+      .update({ hidden_by: currentHidden }).eq('id', id);
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json({ success: true });
   }

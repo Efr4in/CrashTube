@@ -806,7 +806,9 @@ async function sendNotif(){
   fb.textContent=`Enviado a ${selectedTarget.label} ✓`;fb.style.color='var(--accent)';
   document.getElementById('notifMsg').value='';
   setTimeout(()=>{fb.textContent='';},4000);
+  // FIX: cargar y renderizar historial inmediatamente sin refrescar la página
   await loadNotifHistory();
+  renderNotifHistory(notifHistoryData);
 }
 </script>
 </body>
