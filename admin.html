@@ -693,11 +693,12 @@ function renderNotifHistory(list){
 /* NOTIF HISTORY DELETE — solo desde el panel, borra permanentemente */
 async function deleteHistoryNotif(id){
   if(!confirm('¿Borrar este mensaje del historial? Esta acción es permanente.'))return;
-  // ?panel=true → el API hace DELETE real (no soft delete)
   const r=await fetch(`/api/notifications?id=${id}&panel=true`,{method:'DELETE',headers:authH()});
   if(!r.ok){showToast('Error al borrar',true);return;}
+  // Eliminar del array local y re-renderizar inmediatamente, sin fetch
+  notifHistoryData=notifHistoryData.filter(n=>n.id!==id);
+  renderNotifHistory(notifHistoryData);
   showToast('Mensaje eliminado del historial');
-  await loadNotifHistory();
 }
 
 /* ACCIONES */
