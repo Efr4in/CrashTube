@@ -609,33 +609,55 @@ async function loadRequests(){const r=await fetch('/api/users?filter=pending',{h
 async function loadAdmins(){const r=await fetch('/api/users?action=admins',{headers:authH()});allAdmins=await r.json();renderAdmins(allAdmins);}
 async function loadStudents(){try{const r=await fetch('/api/auth?action=students',{headers:authH()});allStudents=await r.json();renderStudents(allStudents);}catch{allStudents=[];}}
 
-// ── POLLING DE SOLICITUDES ─────────────────────────────────────────────────
-// Cada 20 segundos verifica si llegaron nuevas solicitudes de docentes.
-// Si hay más que antes, actualiza la tabla y el badge sin refrescar la página.
+// ── POLLING EN TIEMPO REAL ───────────────────────────────────────────────────
+// Cada 8 segundos verifica solicitudes nuevas Y notificaciones del sistema.
+// Actualiza tabla, badge y bell sin necesidad de refrescar la página.
 let _lastReqCount = 0;
+let _lastNotifCount = 0;
+
 async function pollRequests(){
   if(!SESSION) return;
   try{
     const r = await fetch('/api/users?filter=pending', {headers: authH()});
     if(!r.ok) return;
     const data = await r.json();
-    // Solo actualiza si cambió la cantidad
     if(data.length !== _lastReqCount){
       allRequests = data;
       renderRequests(allRequests);
       updateRequestBadge();
       updateDashboard();
       if(data.length > _lastReqCount){
-        showToast(`Nueva solicitud de docente recibida ✓`);
+        showToast(`📋 Nueva solicitud de docente recibida`);
       }
       _lastReqCount = data.length;
     }
   }catch{}
 }
-// Arrancar polling después de la carga inicial
+
+async function pollNotifications(){
+  if(!SESSION) return;
+  try{
+    const r = await fetch('/api/notifications?view=history', {headers: authH()});
+    if(!r.ok) return;
+    const d = await r.json();
+    const notifs = (d.notifications||[]).filter(n=>n.type==='admin');
+    if(notifs.length !== _lastNotifCount){
+      _lastNotifCount = notifs.length;
+      // Recargar historial completo si cambió
+      notifHistoryData = d.notifications||[];
+      renderNotifHistory(notifHistoryData);
+    }
+  }catch{}
+}
+
 function startPolling(){
   _lastReqCount = allRequests.length;
-  setInterval(pollRequests, 20000); // cada 20 segundos
+  _lastNotifCount = 0;
+  // Polling cada 8 segundos — se siente casi en tiempo real
+  setInterval(()=>{
+    pollRequests();
+    pollNotifications();
+  }, 8000);
 }
 
 // FIX: usa ?view=history para historial completo sin filtro de user_hidden
